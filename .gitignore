@@ -1,0 +1,13 @@
+frontend/node_modules
+backend/public/storage
+backend/storage/*.key
+backend/infra
+backend/vendor
+backend/.env
+backend/.phpunit.result.cache
+backend/Homestead.json
+backend/Homestead.yaml
+backend/npm-debug.log
+backend/yarn-error.log
+backend/.htaccess
+backend/config/database.php
