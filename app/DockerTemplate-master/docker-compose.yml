@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: DockerTemplate-master/docker/app/php.dockerfile
+    image: laravel-api
+    container_name: laravel-api
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ../backend:/var/www
+    environment:
+      - APP_ENV=local
+      - VITE_HOST=0.0.0.0
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ../backend:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - app-network
+
+  node:
+    build:
+      context: ../
+      dockerfile: DockerTemplate-master/docker/app/node.dockerfile
+    image: nodejs
+    container_name: nodejs
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ../frontend:/var/www
+      - /var/www/node_modules
+    environment:
+      - VITE_HOST=0.0.0.0
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: my-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ecommercevuejs
+      MYSQL_USER: hadiwww
+      MYSQL_PASSWORD: cde3bgt5
+      MYSQL_ROOT_PASSWORD: cde3bgt5
+    volumes:
+      - ./DockerTemplate-master/docker/mysql/data:/var/lib/mysql
+    networks:
+      - app-network
+    ports:
+      - "3307:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    environment:
+      - PMA_HOST=my-mysql
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=cde3bgt5
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,119 @@
+import axios from 'axios';
+const baseApiUrl = import.meta.env.VITE_BASEURL;
+
+const apiRequest = axios.create({
+    baseURL :baseApiUrl,
+    headers: {
+        'Content-Type': 'application/json',
+        'content-type': 'multipart/form-data'
+    }
+});
+
+apiRequest.interceptors.request.use((config => {
+    const token = localStorage.getItem('admin_token');
+    const userToken = localStorage.getItem('token');
+    if(token){
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    if(userToken){
+        config.headers.Authorization = `Bearer ${userToken}`
+    }
+    return config;
+}),
+(error => {
+    return Promise.reject(error);
+}));
+
+console.log(localStorage.getItem('admin_token'));
+console.log(localStorage.getItem('token'));
+
+const apiServicesToReUse = {
+
+    //-----------------------------------//
+    // This is for user api route section//
+    //-----------------------------------//
+
+    userRegister(formData){
+        return apiRequest.post('/register', formData);
+    },
+    userLogin(formData){
+        return apiRequest.post('/login', formData);
+    },
+    userLogout(){
+        return apiRequest.post('/logout');
+    },
+    user_getAllProducts(params){
+        return apiRequest.get('/user/user_get_all_products', { params });
+    },
+    addToCart(formData){
+        return apiRequest.post('/user/add_to_cart', formData);
+    },
+    getCartItems(formData){
+        return apiRequest.post('/user/get_products_in_cart', formData);
+    },
+    removeFromCart(formData){
+        return apiRequest.post('/user/delete_product_in_cart', formData);
+    },
+
+    //-------------------------------------//
+    // This is for admin section api routes//
+    //-------------------------------------//
+
+    adminRegister(formData){
+        return apiRequest.post('/admin/register', formData);
+    },
+    adminLogin(formData){
+        return apiRequest.post('/admin/login', formData);
+    },
+    adminLogout(){
+        return apiRequest.post('/admin/logout');
+    },
+    getAdminInfo(){
+        return apiRequest.get('/admin');
+    },
+    updateAdminOnebyOneInfo(modalField , editValue){
+        const payload = { [modalField]: editValue };
+        return apiRequest.post('/admin/update_detail', payload);
+    },
+    createBusinessDetails(formData){    
+        return apiRequest.post('/admin/create_buiness_detail', formData);
+    },
+    getBusinessDetails(){ 
+        return apiRequest.get('/admin/get_business_detail');
+    },
+    addProduct(formData){
+        return apiRequest.post('/admin/add_product', formData);
+    },
+    getAllProducts(params){
+        return apiRequest.get('/admin/get_all_products', { params });
+    },
+    getProductById(id){
+        return apiRequest.get(`/admin/get_product/${id}`);
+    },
+    updateProductById(formData){
+        return apiRequest.post('/admin/update_certain_product', formData);
+    },
+    deleteProductById(id){
+        return apiRequest.delete(`/admin/delete_certain_product/${id}`);
+    },
+    liveOrUnliveProduct(id){
+        return apiRequest.post(`/admin/live_or_unlive_product/${id}`);
+    },
+    addAboutUsDetails(formData){
+        return apiRequest.post('/admin/create_pages', formData);
+    },
+    editPages(formData){
+        return apiRequest.post('/admin/update_pages', formData);
+    },
+    getCertainPageDetailsToEdit(params){
+        return apiRequest.get('/admin/get_certain_page_to_edit', {params});
+    },
+    getCertainPage(params){
+        return apiRequest.get('/admin/get_page', {params});
+    },
+    deletePageDetail(params){
+        return apiRequest.delete('/admin/delete_page_detail', {params});
+    }
+};
+
+export default apiServicesToReUse;

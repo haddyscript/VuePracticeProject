@@ -1,0 +1,188 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Admin;
+
+class AdminController extends Controller
+{
+    public function registerAdmin(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        $findEmailIfExistYet = Admin::where('email', $request->email)->first();
+
+        $checkPassword = $request->password == $request->confirm_password;
+        if(!$checkPassword){
+            return response()->json(([
+                'success' => 'false',
+                'status' => 'error',
+                'message' => 'Password and confirm password do not match, please try again.'
+            ]), 200);
+        }
+
+        if($validator->fails()){
+            return response()->json(([
+                'success' => 'false',
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]), 200);
+        }
+
+        if($findEmailIfExistYet){
+            return response()->json(([
+                'success' => 'false',
+                'status' => 'error',
+                'message' => 'Email already exists, please use another email. Thank you!'
+            ]), 200);
+        }
+
+        $admin = Admin::create([
+            'email' => $request->email,
+            'full_name' => $request->first_name . ' ' . $request->last_name,
+            'password' => bcrypt($request->password),
+            'role' => 'admin'
+        ]);
+
+        $token = $admin->createToken('admin_auth_token')->plainTextToken;
+
+        return response()->json(([
+            'success' => 'true',
+            'status' => 'success',
+            'message' => 'Admin registered successfully, thank you!',
+            'data' => $admin,
+            'token' => $token
+        ]), 200);
+    }
+
+    public function loginAdmin(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return response()->json(([
+                'success' => 'false',
+                'status' => 'error',
+                'message' => 'Validation failed, please check your input!',
+                'errors' => $validator->errors()
+            ]), 200);
+        }
+
+        $admin = Admin::where('email', $request->email)->first();
+
+        if(!$admin){
+            return response()->json(([
+                'success' => 'false',
+                'status' => 'error',
+                'message' => 'Email does not exist, please check your input!'
+            ]), 200);
+        }
+        if($admin && !password_verify($request->password, $admin->password)){
+            return response()->json(([
+                'success' => 'false',
+                'status' => 'error',
+                'message' => 'Password is incorrect, please check your input!'
+            ]), 200);
+        }
+        if($admin && password_verify($request->password, $admin->password)){
+            $token = $admin->createToken('admin_auth_token')->plainTextToken;
+
+            return response()->json(([
+                'success' => 'true',
+                'status' => 'success',
+                'message' => 'Admin logged in successfully, thank you!',
+                'admin' => $admin,
+                'token' => $token
+            ]), 200);
+        }
+    }
+
+    public function logout(Request $request){
+        $admin = $request->user();
+
+        if ($admin && $admin->tokens->isNotEmpty()) {
+            $admin->tokens->each(function ($token) {
+                $token->delete();
+            });
+
+            return response()->json(array(
+                'status' => 'success',
+                'message' => 'Admin logged out successfully!'
+            ));
+        }else {
+            return response()->json(['status' => 'error', 'message' => 'No active tokens to revoke'], 200);
+        }
+        
+        return response()->json(array(
+            'status' => 'error',
+            'message' => 'Unauthorized!'
+        ), 401);
+    }
+
+    public function changeAdminDetail(Request $request){
+        
+        $change = $request->full_name ? 'full_name' : 
+                ($request->email ? 'email' : 
+                ($request->password ? 'password' : 
+                ($request->username ? 'username' : 
+                ($request->language ? 'language' : 
+                ($request->two_factor_secret ? 'two_factor_secret' : 
+                ($request->email_subscription ? 'email_subscription' : 
+                ($request->two_factor_enabled ? 'two_factor_enabled' : 
+                ($request->location ? 'location' : '')))))))); 
+
+        $admin = $request->user();
+
+        if ($change) {
+
+            // Validate email if it's being changed
+            if ($request->has('email') && $request->email != $admin->email) {
+
+                if(Admin::where('email', $request->email)->first()){
+                    return response()->json([
+                        'message' => 'Email is already taken. Please use another email.',
+                        'success' => 'false'
+                    ], 200);
+                }
+            }
+            if ($request->has('username') && $request->username != $admin->username) {
+
+                if(Admin::where('username', $request->username)->first()){
+                    return response()->json([
+                        'message' => 'Username is already taken. Please use another username.',
+                        'success' => 'false'
+                    ], 200);
+                }
+            }
+
+            if ($request->has($change)) {
+                $admin->$change = $request->$change;
+            }
+    
+            $admin->save();
+    
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Admin details updated successfully!',
+                'admin' => $admin
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'No valid data to update.'
+            ], 400);
+        }
+
+    }
+
+}

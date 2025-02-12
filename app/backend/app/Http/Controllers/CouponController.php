@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Coupon;
+use Illuminate\Support\Facades\Log;
+
+class CouponController extends Controller
+{
+    public function addCoupon(Request $request) {
+
+        $checkValidity = $this->checkValidateBeforeAdding($request);
+        if($checkValidity !== null){
+            return $checkValidity;
+        }   
+        $coupon = new Coupon();
+        $coupon->coupon_code = $request->code;
+        $coupon->discount_type = $request->discount_type;
+        $coupon->discount_value = $request->discount_value;
+        $coupon->min_order_amount = $request->min_order_amount;
+        $coupon->max_discount_amount = $request->max_discount_amount;
+        $coupon->start_date = $request->start_date;
+        $coupon->expiry_date = $request->expiry_date;
+        $coupon->usage_limit = $request->usage_limit;
+        $coupon->used_count = $request->used_count;
+        $coupon->is_active = $request->is_active;
+        if( $coupon->save() ){
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Coupon added successfully!',
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Failed to add coupon! Please try again!',
+            ], 200);
+        }
+    }
+
+    private function checkValidateBeforeAdding($request){
+        
+        $findCoupon = Coupon::where('coupon_code', $request->code)->first();
+        if($findCoupon != null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Coupon code already exists!',
+            ], 200);
+        }
+        if($request->discount_type == '' || $request->discount_type == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please select discount type!',
+            ], 200);
+        }
+        if($request->code == '' || $request->code == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter coupon code!',
+            ], 200);
+        }
+        if($request->discount_value == '' || $request->discount_value == null || $request->discount_value == 0){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter discount value!',
+            ], 200);
+        }
+        if($request->min_order_amount == '' || $request->min_order_amount == null || $request->min_order_amount == 0){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter minimum order amount!',
+            ], 200);
+        }
+        if($request->max_discount_amount == '' || $request->max_discount_amount == null || $request->max_discount_amount == 0){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter maximum discount amount!',
+            ], 200);
+        }
+        if($request->start_date == '' || $request->start_date == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter start date!',
+            ], 200);
+        }
+        if($request->expiry_date == '' || $request->expiry_date == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter end date!',
+            ], 200);
+        }
+        if($request->usage_limit == '' || $request->usage_limit == null || $request->usage_limit == 0){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter usage limit!',
+            ], 200);
+        }
+        if($request->used_count == '' || $request->used_count == null || $request->used_count == 0){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter used count!',
+            ], 200);
+        }
+        if($request->is_active == '' || $request->is_active == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter coupon code!',
+            ], 200);
+        }
+
+        return null;
+    }
+
+
+}
