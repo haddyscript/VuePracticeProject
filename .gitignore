@@ -9,6 +9,7 @@ app/backend/Homestead.json
 app/backend/Homestead.yaml
 app/backend/npm-debug.log
 app/backend/yarn-error.log
+app/backend/storage/logs
 app/backend/.htaccess
 app/backend/config/database.php
 app/DockerTemplate-master/DockerTemplate-master/docker/mysql/data
