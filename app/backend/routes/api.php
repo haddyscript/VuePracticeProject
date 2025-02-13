@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/get_products_in_cart', [CartController::class, 'getProductInCart']);
     Route::post('/user/delete_product_in_cart', [CartController::class, 'removeFromCart']);
     Route::post('/user/apply_coupon', [CouponController::class, 'applyCoupon']);
+    Route::post('/user/get_cart_count', [CartController::class, 'getCartCountItems']);
 
     Route::post('/admin/create_buiness_detail', [BusinessDetailController::class, 'createBusinessGeneralDetail']);
     Route::post('/admin/update_detail', [AdminController::class, 'changeAdminDetail']);

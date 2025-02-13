@@ -22,7 +22,12 @@
         </ul>
 
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-          <li v-if="user?.first_name && user?.last_name"><router-link class="nav-link" to="/cart" >Cart</router-link></li>
+          <li v-if="user?.first_name && user?.last_name">
+            <router-link class="nav-link" to="/cart" >Cart 
+              <span v-if="cartCount > 0" class="badge badge-pill badge-warning ml-2" style="background-color: #ffc107; color: black;">
+                {{ cartCount }}
+              </span>
+            </router-link></li>
             <li v-if="user?.first_name && user?.last_name" class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="/images/user.svg" alt="User Icon"> 
@@ -53,7 +58,8 @@ export default {
   data() {
     return {
       user: JSON.parse(localStorage.getItem('user')) || null,
-      business_detail: null
+      business_detail: null,
+      cartCount: ''
     };
   },
   computed: {
@@ -64,9 +70,11 @@ export default {
   watch : {
 	$route(to, from) {
 	    this.getBusinessDetail();
+      this.getCartCountItems();
     }
   },
   mounted() { 
+    this.getCartCountItems();
     this.getBusinessDetail();
 
     const storedUser = localStorage.getItem('user');
@@ -157,6 +165,25 @@ export default {
                 console.error('Error fetching business details:', error);
                 this.business_detail = {};
             }
+        },
+
+        async getCartCountItems(){
+          try{
+              const userData = localStorage.getItem('user');
+              const user = JSON.parse(userData);
+
+              const formData = new FormData();
+              formData.append('user_id', user.id);
+
+              const response = await apiRequest.getCartCountItems(formData);
+              if(response.data.success == "true"){
+                  this.cartCount = response.data.count;
+              }else{
+                  console.error('Error fetching cart items:', response.data);
+              }
+          }catch(error){
+            console.error('Error fetching cart items:', error);
+          }
         }
   }
 };

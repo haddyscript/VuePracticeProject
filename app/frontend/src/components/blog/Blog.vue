@@ -1,6 +1,3 @@
-<script setup lang="ts">
-import TestimonialSlider from '../TestimonialSlider.vue';
-</script>
 
 
 <template>
@@ -145,5 +142,4 @@ import TestimonialSlider from '../TestimonialSlider.vue';
 			</div>
 		</div>
 		<!-- End Blog Section -->	
-        <TestimonialSlider />
 </template>

@@ -183,4 +183,20 @@ class CartController extends Controller
 
         return null;
     }
+
+    public function getCartCountItems(Request $request){
+        $user_id = $request->user_id;
+        if($user_id == 0 || $user_id < 0 || $user_id == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'User does not exist, please login first!',
+            ], 200);
+        }
+        $cart = Cart::where('user_id', $user_id)->get();
+        return response()->json([
+            'success' => 'true',
+            'message' => 'Cart count',
+            'count' => count($cart),
+        ], 200);
+    }
 }

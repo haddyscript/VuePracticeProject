@@ -189,6 +189,8 @@ export default{
           if (coupon.discount_type === 'percentage') {
             if (!isNaN(subtotalParsed) && subtotalParsed > 0 && subtotalParsed >= minOrderAmmount ) {
               discountValue = (subtotalParsed * discountValueParsed) / 100;
+            }else{
+              showAlert("error", "Error", `Minimum order of ${minOrderAmmount} amount not reached!`);
             }
           } else if (coupon.discount_type === 'fixed') {
 

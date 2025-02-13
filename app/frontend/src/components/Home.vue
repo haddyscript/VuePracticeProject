@@ -4,7 +4,6 @@ import StartProductSection  from './StartProductSection.vue';
 import StartWhyChooseUsSection from './StartWhyChooseUsSection.vue';
 import StartWeHelpSection from './StartWeHelpSection.vue';
 import PopularProducts from './PopularProducts.vue';
-import TestimonialSlider from './TestimonialSlider.vue';
 import BlogSection from './BlogSection.vue';
 </script>
 
@@ -14,6 +13,5 @@ import BlogSection from './BlogSection.vue';
     <StartWhyChooseUsSection />
     <StartWeHelpSection />
     <PopularProducts />
-    <TestimonialSlider />
     <BlogSection />
 </template>

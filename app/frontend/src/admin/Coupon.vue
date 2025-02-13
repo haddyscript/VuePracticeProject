@@ -16,6 +16,8 @@
               <th>Code</th>
               <th>Discount Type</th>
               <th>Value</th>
+              <th>Usage Limit</th>
+              <th>Used</th>
               <th>Min Order</th>
               <th>Start Date</th>
               <th>Expiry Date</th>
@@ -29,6 +31,8 @@
               <td>{{ coupon.code }}</td>
               <td>{{ coupon.discount_type }}</td>
               <td> {{ coupon.discount_type === 'fixed' ? coupon.discount_value : (Number(coupon.discount_value).toFixed(0) + '%') }} </td>
+              <td>{{ coupon.usage_limit }}</td>
+              <td>{{ coupon.used_count == 'null' ? 0 : coupon.used_count || 0 }}</td>
               <td>{{ coupon.min_order_amount || 'N/A' }}</td>
               <td>{{ formatDate(coupon.start_date) }}</td>
               <td>{{ formatDate(coupon.expiry_date) }}</td>

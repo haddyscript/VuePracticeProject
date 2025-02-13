@@ -57,6 +57,9 @@ const apiServicesToReUse = {
     applyCoupon(formData){
         return apiRequest.post('/user/apply_coupon', formData);
     },
+    getCartCountItems(formData){
+        return apiRequest.post('/user/get_cart_count', formData);
+    },
 
     //-------------------------------------//
     // This is for admin section api routes//
