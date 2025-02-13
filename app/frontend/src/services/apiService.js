@@ -119,6 +119,12 @@ const apiServicesToReUse = {
     },
     addCoupon(formData){
         return apiRequest.post('/admin/add_coupon', formData);
+    },
+    editCoupon(formData){
+        return apiRequest.post('/admin/edit_coupon', formData);
+    },
+    deleteCoupon(formData){
+        return apiRequest.post('/admin/delete_coupon', formData);
     }
 };
 

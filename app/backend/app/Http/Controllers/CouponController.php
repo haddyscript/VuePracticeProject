@@ -37,11 +37,60 @@ class CouponController extends Controller
             'coupons' => $coupons,
         ], 200);
     }
+
+    public function editCoupon(Request $request){
+        $checkValidity = $this->checkValidateBeforeAdding($request, $edit = true);
+        if($checkValidity !== null){
+            return $checkValidity;
+        }   
+        $coupon = Coupon::find($request->id);
+        $coupon->code = $request->code;
+        $coupon->discount_type = $request->discount_type;
+        $coupon->discount_value = $request->discount_value;
+        $coupon->min_order_amount = $request->min_order_amount;
+        $coupon->max_discount_amount = $request->max_discount_amount;
+        $coupon->start_date = $request->start_date;
+        $coupon->expiry_date = $request->expiry_date;
+        $coupon->usage_limit = $request->usage_limit;
+        $coupon->used_count = $request->used_count;
+        $coupon->is_active = $request->is_active;
+        if( $coupon->save() ){
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Coupon updated successfully!',
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Failed to update coupon! Please try again!',
+            ], 200);
+        }
+    }
     
+    public function deleteCoupon(Request $request){
+
+        if($request->id == '' || $request->id == null || $request->id == 0){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please select a valid coupon!',
+            ], 200);
+        }
+        $coupon = Coupon::find($request->id);
+        if( $coupon->delete() ){
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Coupon deleted successfully!',
+            ], 200);
+        }else{
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Failed to delete coupon! Please try again!',
+            ], 200);
+        }
+    }
 
     public function addCoupon(Request $request) {
-        Log::info('Request data: '.json_encode($request->all()));
-        $checkValidity = $this->checkValidateBeforeAdding($request);
+        $checkValidity = $this->checkValidateBeforeAdding($request, $edit = false);
         if($checkValidity !== null){
             return $checkValidity;
         }   
@@ -69,15 +118,25 @@ class CouponController extends Controller
         }
     }
 
-    private function checkValidateBeforeAdding($request){
+    private function checkValidateBeforeAdding($request, $edit){
         
-        $findCoupon = Coupon::where('code', $request->code)->first();
-        if($findCoupon != null){
-            return response()->json([
-                'success' => 'false',
-                'message' => 'Coupon code already exists!',
-            ], 200);
+        if($edit == true){
+            if($request->id == '' || $request->id == null || $request->id == 0){
+                return response()->json([
+                    'success' => 'false',
+                    'message' => 'Please select a valid coupon!',
+                ], 200);
+            }
+        }else{
+            $findCoupon = Coupon::where('code', $request->code)->first();
+            if($findCoupon != null){
+                return response()->json([
+                    'success' => 'false',
+                    'message' => 'Coupon code already exists!',
+                ], 200);
+            }
         }
+
         if($request->discount_type == '' || $request->discount_type == null){
             return response()->json([
                 'success' => 'false',
@@ -124,12 +183,6 @@ class CouponController extends Controller
             return response()->json([
                 'success' => 'false',
                 'message' => 'Please enter usage limit!',
-            ], 200);
-        }
-        if($request->is_active == '' || $request->is_active == null){
-            return response()->json([
-                'success' => 'false',
-                'message' => 'Please enter coupon code!',
             ], 200);
         }
 
