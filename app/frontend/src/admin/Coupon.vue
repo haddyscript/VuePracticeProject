@@ -67,6 +67,7 @@
                 <a class="clear-btn" @click="clear()">Clear</a>
                 <input hidden v-model="editingCoupon.id" type="number" placeholder="ID" class="form-control"  />
                 <input v-model="editingCoupon.code" type="text" class="form-control" required />
+                <button type="button" class="generate-btn mt-2" @click="generateCouponCode">Generate Code</button>
               </div>
               <div class="form-group">
                 <label>Discount Type</label>
@@ -154,6 +155,14 @@
       },
       clear(){
         this.editingCoupon = {};
+      },
+      generateCouponCode() {
+          const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          let randomCode = '';
+          for (let i = 0; i < 6; i++) {
+            randomCode += characters.charAt(Math.floor(Math.random() * characters.length));
+          }
+          this.editingCoupon.code = randomCode; 
       },
       async saveCoupon() {
         
@@ -299,7 +308,15 @@
   cursor: pointer;
   color: red;
 }
-
+.generate-btn{
+  background: green;
+  color: white;
+  font-size: 11px;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 /* Toggle Switch */
 .switch {
   position: relative;
