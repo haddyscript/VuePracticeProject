@@ -42,7 +42,7 @@
                       </svg>
                     </div> <!-- /.icon -->
                     <div class="service-contents">
-                      <p>43 Raymouth Rd. Baltemoer, London 3910</p>
+                      <p v-if="business_detail"> {{ business_detail.address }}, {{ business_detail.city }}, {{ business_detail.state }}, {{ business_detail.country }} - {{ business_detail.postal_code }} </p>
                     </div> <!-- /.service-contents-->
                   </div> <!-- /.service -->
                 </div>
@@ -55,7 +55,7 @@
                       </svg>
                     </div> <!-- /.icon -->
                     <div class="service-contents">
-                      <p>info@yourdomain.com</p>
+                      <p v-if="business_detail">{{ business_detail.email }}</p>
                     </div> <!-- /.service-contents-->
                   </div> <!-- /.service -->
                 </div>
@@ -68,7 +68,7 @@
                       </svg>
                     </div> <!-- /.icon -->
                     <div class="service-contents">
-                      <p>+1 294 3925 3939</p>
+                      <p v-if="business_detail">{{ business_detail.phone_number }}</p>
                     </div> <!-- /.service-contents-->
                   </div> <!-- /.service -->
                 </div>
@@ -115,3 +115,56 @@
 
   <!-- End Contact Form -->
 </template>
+
+<script>
+import apiRequest from '@/services/apiService';
+
+export default {
+  name: 'Navbar',
+  data() {
+    return {
+      business_detail: null,
+	  currentYear: ''
+    };
+  },
+  computed: {
+    displayBusinessName() {
+        return this.business_detail?.name || "HadiStore";
+    },
+	formatFoundedDate() {
+      if (!this.business_detail || !this.business_detail.founded_year) return "N/A";
+      return this.formatDate(this.business_detail.founded_year);
+    }
+  },
+  watch : {
+	$route(to, from) {
+	    this.getBusinessDetail();
+    }
+  },
+  mounted() { 
+    this.getBusinessDetail();
+	const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+	this.currentYear = currentDate;
+  },
+  methods: {
+		formatDate(dateString) {
+			const date = new Date(dateString);
+			if (isNaN(date.getTime())) return "Invalid Date"; 
+			return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+		},
+		async getBusinessDetail(){
+            try{
+                const response = await apiRequest.getBusinessDetails();
+                if(response.data.success == "true"){
+                  this.business_detail = response.data.business;
+                }else{
+                  this.business_detail = {};
+                }
+            }catch(error){
+                console.error('Error fetching business details:', error);
+                this.business_detail = {};
+            }
+        },
+	}
+}
+</script>

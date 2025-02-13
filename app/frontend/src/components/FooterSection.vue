@@ -144,7 +144,6 @@ export default {
                 const response = await apiRequest.getBusinessDetails();
                 if(response.data.success == "true"){
                   this.business_detail = response.data.business;
-				  console.log(this.business_detail);
                 }else{
                   this.business_detail = {};
                 }
