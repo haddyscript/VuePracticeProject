@@ -232,6 +232,7 @@
 					        </a><!--//nav-link-->
 					        <div id="submenu-2" class="collapse submenu submenu-2" data-bs-parent="#menu-accordion">
 						        <ul class="submenu-list list-unstyled">
+							        <li class="submenu-item"><router-link class="submenu-link" to="/admin/coupon">Coupon</router-link></li>
 							        <li class="submenu-item"><router-link class="submenu-link" to="/admin/login">Login</router-link></li>
 							        <li class="submenu-item"><router-link class="submenu-link" to="/admin/register">Signup</router-link></li>
 							        <li class="submenu-item"><router-link class="submenu-link" to="/admin/reset_password">Reset password</router-link></li>

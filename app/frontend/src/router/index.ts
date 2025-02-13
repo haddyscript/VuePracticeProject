@@ -130,6 +130,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/admin/about_us_settings',
     name: 'Edit About Us Page',
     component: () => import('@/admin/AboutUsSetUp.vue')
+  },
+  {
+    path: '/admin/coupon',
+    name: 'Admin Coupon Page',
+    component: () => import('@/admin/Coupon.vue')
   }
 
 ];

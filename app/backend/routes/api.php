@@ -8,7 +8,8 @@ use App\Http\Controllers\BusinessDetailController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PageDetailController;
 use App\Http\Controllers\CartController;
-
+use App\Models\Coupon;
+use App\Http\Controllers\CouponController;
 
 Route::post('/register', [UserController::class, 'registerUser']);
 Route::post('/login', [UserController::class, 'login']);
@@ -45,6 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/update_certain_product', [ProductController::class, 'updateProductById']);
     Route::post('/admin/live_or_unlive_product/{id}', [ProductController::class, 'liveOrUnliveProduct']);
     Route::delete('/admin/delete_certain_product/{id}', [ProductController::class, 'deleteProductById']);
+
+    Route::get('/admin/get_all_coupon', [CouponController::class, 'getAllCoupon']);
+    Route::post('/admin/add_coupon', [CouponController::class, 'addCoupon']);
 
     Route::post('/admin/create_pages', [PageDetailController::class, 'addPagedetails']);
     Route::post('/admin/update_pages', [PageDetailController::class, 'updatePagedetails']);

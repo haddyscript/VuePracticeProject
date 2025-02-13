@@ -24,8 +24,8 @@ apiRequest.interceptors.request.use((config => {
     return Promise.reject(error);
 }));
 
-console.log(localStorage.getItem('admin_token'));
-console.log(localStorage.getItem('token'));
+console.log("Admin" , localStorage.getItem('admin_token'));
+console.log("User" , localStorage.getItem('token'));
 
 const apiServicesToReUse = {
 
@@ -113,6 +113,12 @@ const apiServicesToReUse = {
     },
     deletePageDetail(params){
         return apiRequest.delete('/admin/delete_page_detail', {params});
+    },
+    getAllCoupon(){
+        return apiRequest.get('/admin/get_all_coupon');
+    },
+    addCoupon(formData){
+        return apiRequest.post('/admin/add_coupon', formData);
     }
 };
 

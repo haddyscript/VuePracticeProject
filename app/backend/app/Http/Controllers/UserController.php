@@ -70,7 +70,7 @@ class UserController extends Controller
     
 
     public function login(Request $request){
-
+        // Log::info('Incoming Request for Business Details: ' . var_export($request->all(), true));
         $user = User::where('email', $request->email)->first();
 
         $validate = $this->validateData($user, $request);
@@ -139,7 +139,6 @@ class UserController extends Controller
     public function logout(Request $request){
 
         $user = $request->user();
-        Log::info("Logged in user:", $user->toArray());
 
         if ($user && $user->tokens->isNotEmpty()) {
             $user->tokens->each(function ($token) {

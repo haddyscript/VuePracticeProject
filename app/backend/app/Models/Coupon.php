@@ -13,7 +13,8 @@ class Coupon extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'coupon_code',
+        'id',
+        'code',
         'discount',
         'discount_type',
         'discount_value',

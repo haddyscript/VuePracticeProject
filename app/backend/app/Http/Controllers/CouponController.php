@@ -8,14 +8,45 @@ use Illuminate\Support\Facades\Log;
 
 class CouponController extends Controller
 {
-    public function addCoupon(Request $request) {
+    public function getAllCoupon(){
+        $coupons = Coupon::all()->map(function($coupon) {
+            return [
+                'id' => $coupon->id,
+                'code' => $coupon->code,
+                'discount_type' => $coupon->discount_type,
+                'discount_value' => $coupon->discount_value,
+                'min_order_amount' => $coupon->min_order_amount,
+                'max_discount_amount' => $coupon->max_discount_amount,
+                'usage_limit' => $coupon->usage_limit,
+                'used_count' => $coupon->used_count,
+                'is_active' => (int) $coupon->is_active,
+                'start_date' => date('Y-m-d', strtotime($coupon->start_date)), 
+                'expiry_date' => date('Y-m-d', strtotime($coupon->expiry_date)),
+            ];
+        });
+    
+        if ($coupons->isEmpty()) {
+            return response()->json([
+                'success' => 'false',
+                'message' => 'No coupon found!',
+            ], 200);
+        }
+    
+        return response()->json([
+            'success' => 'true',
+            'coupons' => $coupons,
+        ], 200);
+    }
+    
 
+    public function addCoupon(Request $request) {
+        Log::info('Request data: '.json_encode($request->all()));
         $checkValidity = $this->checkValidateBeforeAdding($request);
         if($checkValidity !== null){
             return $checkValidity;
         }   
         $coupon = new Coupon();
-        $coupon->coupon_code = $request->code;
+        $coupon->code = $request->code;
         $coupon->discount_type = $request->discount_type;
         $coupon->discount_value = $request->discount_value;
         $coupon->min_order_amount = $request->min_order_amount;
@@ -40,7 +71,7 @@ class CouponController extends Controller
 
     private function checkValidateBeforeAdding($request){
         
-        $findCoupon = Coupon::where('coupon_code', $request->code)->first();
+        $findCoupon = Coupon::where('code', $request->code)->first();
         if($findCoupon != null){
             return response()->json([
                 'success' => 'false',
@@ -93,12 +124,6 @@ class CouponController extends Controller
             return response()->json([
                 'success' => 'false',
                 'message' => 'Please enter usage limit!',
-            ], 200);
-        }
-        if($request->used_count == '' || $request->used_count == null || $request->used_count == 0){
-            return response()->json([
-                'success' => 'false',
-                'message' => 'Please enter used count!',
             ], 200);
         }
         if($request->is_active == '' || $request->is_active == null){
