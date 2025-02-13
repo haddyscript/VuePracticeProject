@@ -76,10 +76,10 @@
                       <p>Enter your coupon code if you have one.</p>
                     </div>
                     <div class="col-md-8 mb-3 mb-md-0">
-                      <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
+                      <input type="text" class="form-control py-3"  v-model="couponCode"  id="coupon" placeholder="Coupon Code">
                     </div>
                     <div class="col-md-4">
-                      <button class="btn btn-black">Apply Coupon</button>
+                      <button class="btn btn-black"  @click="applyCoupon">Apply Coupon</button>
                     </div>
                   </div>
                 </div>
@@ -100,12 +100,21 @@
                           <strong class="text-black">${{ subtotal }}</strong>
                         </div>
                       </div>
+                       <!-- Coupon Discount Section -->
+                      <div v-if="discountAmount > 0" class="row mb-3">
+                        <div class="col-md-6">
+                          <span class="text-black">Discounted by Coupon</span>
+                        </div>
+                        <div class="col-md-6 text-right">
+                          <strong class="text-black">-${{ discountAmount.toFixed(2) }}</strong>
+                        </div>
+                      </div>
                       <div class="row mb-5">
                         <div class="col-md-6">
                           <span class="text-black">Total</span>
                         </div>
                         <div class="col-md-6 text-right">
-                          <strong class="text-black">${{ subtotal }}</strong>
+                          <strong class="text-black">${{ total }}</strong>
                         </div>
                       </div>
         
@@ -130,6 +139,11 @@ export default{
   data(){
     return{
       products: [],
+      couponCode: '',
+      subtotal: 0,    
+      discountAmount: 0,
+      total: 0,
+      couponData: null
     }
   },
   mounted(){
@@ -137,12 +151,53 @@ export default{
   },
   computed: {
     subtotal() {
-      return this.products.reduce((total, product) => {
+      return this.subtotal = this.products.reduce((total, product) => {
         return total + product.product_price * product.quantity;
       }, 0).toFixed(2);
-    }
+    },
+
+    total() {
+      return (parseFloat(this.subtotal) - this.discountAmount).toFixed(2);
+    },
   },
   methods: {
+    async applyCoupon() {
+      try {
+        const formData = new FormData();
+        formData.append('code', this.couponCode);
+        const response = await apiRequest.applyCoupon(formData);
+        if (response.data.success === 'true') {
+            const coupon = response.data.coupon;
+            this.couponData = coupon; 
+            this.applyCouponDiscount(coupon);
+        } else {
+          this.discountAmount = 0;
+            showAlert("error", "Oops!", response.data.message);
+        }
+      } catch (error) {
+          console.error('Catch error', error);
+      }
+    },
+    applyCouponDiscount(coupon) {
+
+          let discountValueParsed = parseFloat(coupon.discount_value); 
+          const subtotalParsed = parseFloat(this.subtotal);
+          const minOrderAmmount = parseFloat(coupon.min_order_amount);
+
+          let discountValue = 0;
+
+          if (coupon.discount_type === 'percentage') {
+            if (!isNaN(subtotalParsed) && subtotalParsed > 0 && subtotalParsed >= minOrderAmmount ) {
+              discountValue = (subtotalParsed * discountValueParsed) / 100;
+            }
+          } else if (coupon.discount_type === 'fixed') {
+
+            discountValue = discountValueParsed;
+          }
+          this.discountAmount = discountValue;
+      },
+
+
       async fetchProducts(){
           try{
               const userData = localStorage.getItem('user');
@@ -154,7 +209,6 @@ export default{
               const response = await apiRequest.getCartItems(formData);
               if(response.data.success == "true"){
                   this.products = response.data.products;
-                  console.log('Products', this.products);
               }else{
                   console.error('Error fetching products', response.data);
               }

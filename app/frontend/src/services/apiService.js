@@ -54,6 +54,9 @@ const apiServicesToReUse = {
     removeFromCart(formData){
         return apiRequest.post('/user/delete_product_in_cart', formData);
     },
+    applyCoupon(formData){
+        return apiRequest.post('/user/apply_coupon', formData);
+    },
 
     //-------------------------------------//
     // This is for admin section api routes//

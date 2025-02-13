@@ -16,7 +16,6 @@ class CouponController extends Controller
                 'discount_type' => $coupon->discount_type,
                 'discount_value' => $coupon->discount_value,
                 'min_order_amount' => $coupon->min_order_amount,
-                'max_discount_amount' => $coupon->max_discount_amount,
                 'usage_limit' => $coupon->usage_limit,
                 'used_count' => $coupon->used_count,
                 'is_active' => (int) $coupon->is_active,
@@ -38,6 +37,54 @@ class CouponController extends Controller
         ], 200);
     }
 
+    public function applyCoupon(Request $request){
+        
+        if($request->code == '' || $request->code == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Please enter coupon code!',
+            ], 200);
+        }
+
+        $coupon = Coupon::where('code', $request->code)->first();
+        if($coupon == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Invalid coupon code!',
+            ], 200);
+        }
+        if($coupon->is_active == 0){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Coupon code is not active!',
+            ], 200);
+        }
+        if($coupon->expiry_date < date('Y-m-d')){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Coupon code is expired!',
+            ], 200);
+        }
+        if($coupon->usage_limit < $coupon->used_count){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Coupon code is expired!',
+            ], 200);
+        }
+
+        $couponValidData = [
+            'id' => $coupon->id,
+            'code' => $coupon->code,
+            'discount_type' => $coupon->discount_type,
+            'discount_value' => $coupon->discount_value,
+            'min_order_amount' => $coupon->min_order_amount,
+        ];
+        return response()->json([
+            'success' => 'true',
+            'coupon' => $couponValidData,
+        ], 200);
+    }
+
     public function editCoupon(Request $request){
         $checkValidity = $this->checkValidateBeforeAdding($request, $edit = true);
         if($checkValidity !== null){
@@ -48,7 +95,6 @@ class CouponController extends Controller
         $coupon->discount_type = $request->discount_type;
         $coupon->discount_value = $request->discount_value;
         $coupon->min_order_amount = $request->min_order_amount;
-        $coupon->max_discount_amount = $request->max_discount_amount;
         $coupon->start_date = $request->start_date;
         $coupon->expiry_date = $request->expiry_date;
         $coupon->usage_limit = $request->usage_limit;
@@ -99,7 +145,6 @@ class CouponController extends Controller
         $coupon->discount_type = $request->discount_type;
         $coupon->discount_value = $request->discount_value;
         $coupon->min_order_amount = $request->min_order_amount;
-        $coupon->max_discount_amount = $request->max_discount_amount;
         $coupon->start_date = $request->start_date;
         $coupon->expiry_date = $request->expiry_date;
         $coupon->usage_limit = $request->usage_limit;
@@ -159,12 +204,6 @@ class CouponController extends Controller
             return response()->json([
                 'success' => 'false',
                 'message' => 'Please enter minimum order amount!',
-            ], 200);
-        }
-        if($request->max_discount_amount == '' || $request->max_discount_amount == null || $request->max_discount_amount == 0){
-            return response()->json([
-                'success' => 'false',
-                'message' => 'Please enter maximum discount amount!',
             ], 200);
         }
         if($request->start_date == '' || $request->start_date == null){

@@ -17,7 +17,6 @@
               <th>Discount Type</th>
               <th>Value</th>
               <th>Min Order</th>
-              <th>Max Discount</th>
               <th>Start Date</th>
               <th>Expiry Date</th>
               <th>Active</th>
@@ -31,7 +30,6 @@
               <td>{{ coupon.discount_type }}</td>
               <td> {{ coupon.discount_type === 'fixed' ? coupon.discount_value : (Number(coupon.discount_value).toFixed(0) + '%') }} </td>
               <td>{{ coupon.min_order_amount || 'N/A' }}</td>
-              <td>{{ coupon.max_discount_amount || 'N/A' }}</td>
               <td>{{ formatDate(coupon.start_date) }}</td>
               <td>{{ formatDate(coupon.expiry_date) }}</td>
               <td>
@@ -87,10 +85,6 @@
               <div class="form-group">
                 <label>Min Order Amount</label>
                 <input v-model="editingCoupon.min_order_amount" type="number" class="form-control" />
-              </div>
-              <div class="form-group">
-                <label>Max Discount Amount</label>
-                <input v-model="editingCoupon.max_discount_amount" type="number" class="form-control" />
               </div>
               <div class="form-group">
                 <label>Start Date</label>
