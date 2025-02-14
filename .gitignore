@@ -15,3 +15,4 @@ app/backend/config/database.php
 app/DockerTemplate-master/*
 app/DockerTemplate-master/DockerTemplate-master/
 app/DockerTemplate-master/DockerTemplate-master/docker/mysql/data/ecommercevuejs/
+/app/DockerTemplate-master/DockerTemplate-master/docker/mysql/data/\#innodb_redo
