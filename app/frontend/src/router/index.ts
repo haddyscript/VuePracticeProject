@@ -151,7 +151,7 @@ router.beforeEach((to, from, next) => {
   const user = localStorage.getItem('user');
   const admin = localStorage.getItem('admin');
   
-  if(to.path === '/admin' && !admin || to.path === '/admin/' && !admin){
+  if(to.path === '/admin' && !admin || to.path === '/admin/' && !admin || to.path === '/admin/*' && !admin){
     next('/admin/login');
   }if(to.path === '/admin' && admin){
     next();
