@@ -10,3 +10,8 @@
 ./binlog.000010
 ./binlog.000011
 ./binlog.000012
+<<<<<<< HEAD
+=======
+./binlog.000016
+./binlog.000017
+>>>>>>> parent of e9e8530 (Update .gitignore to exclude DockerTemplate directories)
