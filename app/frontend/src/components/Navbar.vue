@@ -70,16 +70,19 @@ export default {
   watch : {
 	$route(to, from) {
 	    this.getBusinessDetail();
-      this.getCartCountItems();
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        this.getCartCountItems();
+      }
     }
   },
   mounted() { 
-    this.getCartCountItems();
     this.getBusinessDetail();
 
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       this.user = JSON.parse(storedUser);
+      this.getCartCountItems();
     }
 
     const navlink = document.querySelectorAll('.nav-link');
