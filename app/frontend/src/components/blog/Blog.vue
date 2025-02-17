@@ -183,7 +183,7 @@ export default {
 
 .loader {
   border: 5px solid #f3f3f3;
-  border-top: 5px solid #3498db;
+  border-top: 5px solid #3b5d50;
   border-radius: 50%;
   width: 50px;
   height: 50px;
