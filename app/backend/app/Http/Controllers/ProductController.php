@@ -323,16 +323,17 @@ class ProductController extends Controller
 
     public function deleteProductById($id){
 
-        $product = Product::where('id', $id)->delete();
-        if (!$product) {
+        $image = ProductImage::where('product_id', $id)->delete();
+        if (!$image) {
             return response()->json([
                 'success' => "false",
                 'status' => 'error',
                 'message' => 'Product delete failed, please try again!',
             ]);
         }
-        if($product){
-            if(!ProductImage::where('product_id', $id)->delete()){
+        if($image){
+            $product = Product::where('id', $id)->delete();
+            if(!$product){
                 return response()->json([
                     'success' => "false",
                     'status' => 'error',

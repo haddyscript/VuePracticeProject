@@ -48,6 +48,18 @@
 					required
 				  />
 				</div>
+				<div class="email mb-3">
+				  <label class="sr-only" for="signup-email">Your Username</label>
+				  <input
+				  	v-model="form.username"
+					id="signup-email"
+					name="signup-email"
+					type="text"
+					class="form-control signup-email"
+					placeholder="Username"
+					required
+				  />
+				</div>
 				<div class="password mb-3">
 				  <label class="sr-only" for="signup-password">Password</label>
 				  <input
@@ -132,6 +144,7 @@
 				form:{
 					first_name : '',
 					last_name : '',
+					username : '',
 					email : '',
 					password : '',
 					confirm_password : ''

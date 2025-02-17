@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BusinessDetail extends Model
 {
-    protected $table = 'business_detail';
+    protected $table = 'business_details';
     protected $primaryKey = 'id';
     public $timestamps = false;
 
@@ -29,9 +29,5 @@ class BusinessDetail extends Model
         'edited_by',
         'contact_name',
         'live'
-    ];
-
-    protected $casts = [
-        'social_media_links' => 'array',
     ];
 }

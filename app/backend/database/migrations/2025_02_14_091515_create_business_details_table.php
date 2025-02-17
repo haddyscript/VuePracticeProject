@@ -17,7 +17,7 @@ class CreateBusinessDetailsTable extends Migration
             $table->id(); 
             $table->string('name');
             $table->text('description')->nullable();
-            $table->year('founded_year')->nullable();
+            $table->date('founded_date')->nullable();
             $table->string('owner_name')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('email')->nullable();
@@ -27,8 +27,8 @@ class CreateBusinessDetailsTable extends Migration
             $table->string('state')->nullable();
             $table->string('country')->nullable();
             $table->string('postal_code')->nullable();
-            $table->json('social_media_links')->nullable(); 
-            $table->json('business_hours')->nullable();
+            $table->string('social_media_links')->nullable(); 
+            $table->string('business_hours')->nullable();
             $table->string('logo_url')->nullable();
             $table->string('edited_by')->nullable();
             $table->string('contact_name')->nullable();

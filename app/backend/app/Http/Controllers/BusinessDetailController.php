@@ -7,6 +7,7 @@ use App\Models\Admin;
 use App\Models\BusinessDetail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class BusinessDetailController extends Controller
 {

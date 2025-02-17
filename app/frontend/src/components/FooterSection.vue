@@ -121,6 +121,7 @@ export default {
 	formatFoundedDate() {
       if (!this.business_detail || !this.business_detail.founded_year) return "N/A";
       return this.formatDate(this.business_detail.founded_year);
+
     }
   },
   watch : {

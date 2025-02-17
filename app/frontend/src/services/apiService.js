@@ -4,8 +4,12 @@ const baseApiUrl = import.meta.env.VITE_BASEURL;
 const apiRequest = axios.create({
     baseURL :baseApiUrl,
     headers: {
-        'Content-Type': 'application/json',
-        'content-type': 'multipart/form-data'
+        // 'Content-Type': 'application/json',
+        'content-type': 'multipart/form-data',
+         "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+        credentials:true,            //access-control-allow-credentials:true
+        optionSuccessStatus:200
     }
 });
 

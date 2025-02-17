@@ -18,6 +18,7 @@ class AdminController extends Controller
         ]);
 
         $findEmailIfExistYet = Admin::where('email', $request->email)->first();
+        $findUsernameIfExistYet = Admin::where('username', $request->username)->first();
 
         $checkPassword = $request->password == $request->confirm_password;
         if(!$checkPassword){
@@ -44,9 +45,17 @@ class AdminController extends Controller
                 'message' => 'Email already exists, please use another email. Thank you!'
             ]), 200);
         }
+        if($findUsernameIfExistYet){
+            return response()->json(([
+                'success' => 'false',
+                'status' => 'error',
+                'message' => 'Username already exists, please use another email. Thank you!'
+            ]), 200);
+        }
 
         $admin = Admin::create([
             'email' => $request->email,
+            'username' => $request->username,
             'full_name' => $request->first_name . ' ' . $request->last_name,
             'password' => bcrypt($request->password),
             'role' => 'admin'

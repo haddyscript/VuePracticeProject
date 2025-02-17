@@ -289,6 +289,7 @@ export default {
           const response = await apiRequest.getAllProducts(params); 
           this.products = response.data.products;
           this.pagination = response.data.pagination;
+          console.log("Response:", response);
         } catch (error) {
           console.error("Error fetching products:", error);
         }
