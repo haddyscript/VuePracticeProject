@@ -148,7 +148,6 @@ class CouponController extends Controller
         $coupon->start_date = $request->start_date;
         $coupon->expiry_date = $request->expiry_date;
         $coupon->usage_limit = $request->usage_limit;
-        $coupon->used_count = $request->used_count;
         $coupon->is_active = $request->is_active;
         if( $coupon->save() ){
             return response()->json([

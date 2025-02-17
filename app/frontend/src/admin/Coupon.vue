@@ -123,7 +123,7 @@
       return {
         coupons: [],
         showModal: false,
-        editingCoupon: {},
+        editingCoupon: { is_active: 0},
       };
     },
     mounted() {
