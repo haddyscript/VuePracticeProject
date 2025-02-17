@@ -151,25 +151,27 @@ router.beforeEach((to, from, next) => {
   const user = localStorage.getItem('user');
   const admin = localStorage.getItem('admin');
   
-  if(to.path === '/admin' && !admin || to.path === '/admin/' && !admin || to.path === '/admin/*' && !admin){
-    next('/admin/login');
-  }if(to.path === '/admin' && admin){
-    next();
+  const adminRoutes = [
+    '/admin', '/admin/', '/admin/product', '/admin/settings', '/admin/account', 
+    '/admin/orders', '/admin/charts', '/admin/login', '/admin/reset_password', 
+    '/admin/404', '/admin/help', '/admin/edit_product/:id', '/admin/about_us_settings', '/admin/coupon'
+  ];
+  
+  if ( adminRoutes.includes(to.path) && !admin) {
+    console.log('admin not logged in');
+    console.log('redirecting to ', to.path);
+    return next('/admin/login');
   }
 
 
   if (to.path === '/login' && user) {
-    next('/');
+    return next('/');
   }if (to.path === '/register' && user) {
-    next('/');
+    return next('/');
   }if (to.path === '/cart' && !user) {
-    next('/');
-  }if (to.path === '/checkout' && user) {
-    next('/');
+    return next('/');
   }
-   else {
-    next();
-  }
+  next();
 });
 
 
