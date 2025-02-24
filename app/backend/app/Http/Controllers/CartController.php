@@ -109,7 +109,7 @@ class CartController extends Controller
                 'message' => 'User does not exist, please login first!',
             ], 200);
         }
-        $cart = Cart::where('user_id', $user_id)->get();
+        $cart = Cart::where('user_id', $user_id)->where('is_checkout', 0)->get();
         $products = [];
         
         foreach($cart as $cart_items){

@@ -30,6 +30,7 @@
                     <table class="table">
                       <thead>
                         <tr>
+                          <th></th>
                           <th class="product-thumbnail">Image</th>
                           <th class="product-name">Product</th>
                           <th class="product-price">Price</th>
@@ -40,6 +41,9 @@
                       </thead>
                       <tbody>
                           <tr v-for="(product, index) in products" :key="index">
+                              <td>
+                                  <input type="checkbox" v-model="selectedProducts" :value="product.product_id">
+                              </td>
                               <td class="product-thumbnail">
                                   <img :src="'data:image/png;base64,' + product.product_image" alt="Image" class="img-fluid">
                               </td>
@@ -124,7 +128,7 @@
         
                       <div class="row">
                         <div class="col-md-12">
-                          <router-link class="btn btn-black btn-lg py-3 btn-block" to="/thankyou" >Proceed To Checkout</router-link>
+                          <router-link class="btn btn-black btn-lg py-3 btn-block" to="/checkout" >Proceed To Checkout</router-link>
                         </div>
                       </div>
                     </div>

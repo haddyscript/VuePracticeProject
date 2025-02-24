@@ -13,6 +13,7 @@ class CreateCartTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity')->default(1);  
+            $table->integer('is_checkout')->default(0);  
             $table->timestamps();
         });
     }

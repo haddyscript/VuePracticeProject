@@ -176,6 +176,7 @@ export default {
 
 				if(response.data.success == "true"){
 					showAlert("success", "Success!", response.data.message);
+					this.$router.push('/cart');
 					this.quantity = 1;
 				}else{
 					showAlert("error", "Oops!", response.data.message);
