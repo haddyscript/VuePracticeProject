@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('checkout', function (Blueprint $table) {
             $table->id();
+            $table->int('user_id');
             $table->json('cart_id'); 
             $table->string('coupon_code')->nullable(); 
             $table->timestamp('created_at')->useCurrent(); 
