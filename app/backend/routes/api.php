@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/apply_coupon', [CouponController::class, 'applyCoupon']);
     Route::post('/user/get_cart_count', [CartController::class, 'getCartCountItems']);
     Route::post('/user/proceed_to_checkout', [CheckoutController::class, 'addToCheckout']);
+    Route::post('/user/checkout_items', [CheckoutController::class, 'getCheckoutDetails']);
 
     Route::post('/admin/create_buiness_detail', [BusinessDetailController::class, 'createBusinessGeneralDetail']);
     Route::post('/admin/update_detail', [AdminController::class, 'changeAdminDetail']);

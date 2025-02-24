@@ -5,12 +5,39 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Checkout;
 use App\Models\Coupon;
+use App\Models\Product;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\Cart;
 
 class CheckoutController extends Controller
 {
+    public function getCheckoutDetails(Request $request){
+        $checkout = Checkout::where('user_id', $request->user_id)->first();
+        Log::info($checkout);
+        if($checkout){
+            $decodeIds = json_decode($checkout->cart_id);
+            Log::info('decodeIds : ', $decodeIds);
+            $carts = Cart::whereIn('id', $decodeIds)->get();
+
+            if ($carts->isNotEmpty()) {
+                foreach ($carts as $cart) {
+                    $product = Product::find($cart->product_id);
+                    if ($product) {
+                        $cart->product_name = $product->name;
+                        $cart->product_price = $product->price;
+                    }
+                }
+            }
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Checkout details',
+                'checkout' => $checkout,
+                'carts' => $carts,
+            ], 200);
+        }
+    }
+
     public function addToCheckout (Request $request){
 
         $validateData = $this->checkData($request);
