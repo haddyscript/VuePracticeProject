@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BusinessDetailController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CheckoutController;
 
 
 Route::post('/register', [UserController::class, 'registerUser']);
@@ -27,6 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin', function (Request $request){
         return $request->user();
     });
+
+    Route::post('/user/proceed_to_checkout', [CheckoutController::class, 'addToCheckout']);
 
     Route::post('/admin/create_buiness_detail', [BusinessDetailController::class, 'createBusinessGeneralDetail']);
     Route::put('/admin/update_detail', [AdminController::class, 'changeAdminDetail']);

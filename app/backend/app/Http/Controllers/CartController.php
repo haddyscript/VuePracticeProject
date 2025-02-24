@@ -120,6 +120,7 @@ class CartController extends Controller
             }
 
             $products[] = [
+                'cart_id' => $cart_items->id,
                 'product_id' => $product->id,
                 'product_name' => $product->name,
                 'product_price' => $product->price,
@@ -192,7 +193,7 @@ class CartController extends Controller
                 'message' => 'User does not exist, please login first!',
             ], 200);
         }
-        $cart = Cart::where('user_id', $user_id)->get();
+        $cart = Cart::where('user_id', $user_id)->where('is_checkout', 0)->get();
         return response()->json([
             'success' => 'true',
             'message' => 'Cart count',

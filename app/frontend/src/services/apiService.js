@@ -64,6 +64,9 @@ const apiServicesToReUse = {
     getCartCountItems(formData){
         return apiRequest.post('/user/get_cart_count', formData);
     },
+    proceedToCheckout(formData){
+        return apiRequest.post('/user/proceed_to_checkout', formData);
+    },
 
     //-------------------------------------//
     // This is for admin section api routes//

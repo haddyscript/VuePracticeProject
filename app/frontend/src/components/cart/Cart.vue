@@ -42,7 +42,7 @@
                       <tbody>
                           <tr v-for="(product, index) in products" :key="index">
                               <td>
-                                  <input type="checkbox" v-model="selectedProducts" :value="product.product_id">
+                                  <input type="checkbox" :value="product.id" @change="toggleSelection(product.cart_id)">
                               </td>
                               <td class="product-thumbnail">
                                   <img :src="'data:image/png;base64,' + product.product_image" alt="Image" class="img-fluid">
@@ -128,7 +128,7 @@
         
                       <div class="row">
                         <div class="col-md-12">
-                          <router-link class="btn btn-black btn-lg py-3 btn-block" to="/checkout" >Proceed To Checkout</router-link>
+                          <a class="btn btn-black btn-lg py-3 btn-block" @click="checkout" >Proceed To Checkout</a>
                         </div>
                       </div>
                     </div>
@@ -149,6 +149,7 @@ export default{
     return{
       isLoading: true,
       products: [],
+      selectedProducts: [],
       couponCode: '',
       subtotal: 0,    
       discountAmount: 0,
@@ -174,6 +175,38 @@ export default{
     },
   },
   methods: {
+    toggleSelection(productId) {
+        const index = this.selectedProducts.indexOf(productId);
+        if (index === -1) {
+          this.selectedProducts.push(productId);
+        } else {
+          this.selectedProducts.splice(index, 1);
+        }
+    },
+    async checkout(){
+        if(this.selectedProducts.length <= 0){
+          showAlert("error", "Oops!", "Please select a product to checkout.");
+          return;
+        }
+        try{
+          const userData = localStorage.getItem('user');
+          const user     = JSON.parse(userData);
+          const formData = new FormData();
+          formData.append('cart_ids', JSON.stringify(this.selectedProducts));
+          formData.append('coupon_code', this.couponCode);
+          formData.append('user_id', user.id);
+          const response = await apiRequest.proceedToCheckout(formData);
+          console.log( "Response : " , response);
+          if(response.data.success == "true"){
+              showAlert("success", "Success!", response.data.message);
+              this.$router.push('/checkout');
+          }else{
+              console.log('Error : ', response.data);
+          }
+        }catch(error){
+          console.error('Catch error : ', error);
+        }
+    },
     async applyCoupon() {
       try {
         const formData = new FormData();
@@ -210,7 +243,7 @@ export default{
             discountValue = discountValueParsed;
           }
           this.discountAmount = discountValue;
-      },
+    },
 
 
       async fetchProducts(){
