@@ -158,9 +158,11 @@ router.beforeEach((to, from, next) => {
   ];
   
   if ( adminRoutes.includes(to.path) && !admin) {
-    console.log('admin not logged in');
-    console.log('redirecting to ', to.path);
-    return next('/admin/login');
+    if (to.path !== '/admin/login') {
+      console.log('admin not logged in');
+      console.log('redirecting to /admin/login');
+      return next('/admin/login');
+    }
   }
 
 
