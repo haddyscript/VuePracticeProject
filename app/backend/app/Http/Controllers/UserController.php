@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Models\Checkout;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -70,7 +71,7 @@ class UserController extends Controller
     
 
     public function login(Request $request){
-        // Log::info('Incoming Request for Business Details: ' . var_export($request->all(), true));
+
         $user = User::where('email', $request->email)->first();
 
         $validate = $this->validateData($user, $request);
@@ -122,18 +123,23 @@ class UserController extends Controller
         if($user && Hash::check($request->password, $user->password)){
 
             $token = $user->createToken('auth_token')->plainTextToken;
-            
+            $checkExistingCheckout = $this->checkExistingCheckout($user->id);
             $result = response()->json(
                 array(
                     'success' => "true",
                     'status' => 'success',
                     'message' => 'User logged in successfully',
                     'user' => $user,
-                    'token' => $token
+                    'token' => $token,
+                    'have_checkout' => $checkExistingCheckout
                 ), 200
             );
         }
         return $result;
+    }
+    private function checkExistingCheckout($user_id){
+        $checkout = Checkout::where('user_id', $user_id)->first();
+        return $checkout ? true : false;
     }
 
     public function logout(Request $request){

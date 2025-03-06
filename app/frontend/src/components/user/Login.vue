@@ -75,7 +75,7 @@ export default{
        async submitForm(){
             try{
                 const response = await apiRequest.userLogin(this.form);
-
+                console.log(response.data);
                 if(response.data.success == "true"){
 
                     console.log(response.data);
@@ -91,9 +91,13 @@ export default{
                             confirmButton: 'custom-confirm-button'
                         }
                     }).then(() =>{
-                        this.$router.push('/').then(() => {
-                            window.location.reload();
-                        });
+                        if(response.data.have_checkout == true){
+                            this.$router.push('/checkout');
+                        }else{
+                            this.$router.push('/').then(() => {
+                                window.location.reload();
+                            });
+                        }
                     });
                     
                 }else{
