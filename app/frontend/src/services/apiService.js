@@ -36,7 +36,9 @@ const apiServicesToReUse = {
     //-----------------------------------//
     // This is for user api route section//
     //-----------------------------------//
-
+    getCountry(){
+        return apiRequest.get('/get_country');
+    },
     userRegister(formData){
         return apiRequest.post('/register', formData);
     },

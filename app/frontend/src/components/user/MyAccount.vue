@@ -99,8 +99,12 @@
                 </div>
 
                 <div class="form-group">
-                <label for="country">Country:</label>
-                <input id="country" v-model="user.country" class="input-field" />
+                    <select v-model="selectedCountry" class="form-control" :required="true" @change="updateCountry">
+							<option value="">Select a country</option>
+							<option v-for="place in countries" :key="place.id" :value="place.name">
+								{{ place.name }}
+							</option>
+						</select>
                 </div>
 
                 <div class="form-group">
@@ -123,6 +127,8 @@
   export default {
     data() {
       return {
+        countries: [],
+        selectedCountry: '',
         isLoading: true,
         activeTab: 'settings',
         user: [],
@@ -138,13 +144,24 @@
     },
     mounted() {
       this.getUser();
+      this.getCountry();
       setTimeout(() => {
 			this.isLoading = false; 
 		}, 1000);
     },
     methods: {
+        async getCountry(){
+			try{
+				const response = await apiRequest.getCountry();
+				if(response.data != undefined){
+					this.countries = response.data.data;
+				}
+			}catch(error){
+				console.log(error);
+			}
+		},
         formatPhoneNumber() {
-            let value = this.user.phone_number.replace(/\D/g, ''); // Remove all non-numeric characters
+            let value = this.user.phone_number.replace(/\D/g, ''); 
 
             if (value.length > 4) {
             value = value.substring(0, 4) + ' ' + value.substring(4);
@@ -163,6 +180,7 @@
                 const response = await apiRequest.getUser();
                 if(response.data != undefined){
                     this.user = response.data;
+                    this.selectedCountry = this.user.country;
                 }
             } catch (error) {
                 console.log(error);
@@ -181,7 +199,7 @@
             formData.append('address', this.user.address ? this.user.address : '');
             formData.append('city', this.user.city ? this.user.city : '');
             formData.append('state', this.user.state ? this.user.state : '');
-            formData.append('country', this.user.country ? this.user.country : '');
+            formData.append('country', this.selectedCountry ? this.selectedCountry : '');
             formData.append('postal_code', this.user.postal_code ? this.user.postal_code : '');
 
             const response = await apiRequest.updateUser(formData);

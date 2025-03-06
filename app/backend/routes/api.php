@@ -10,12 +10,13 @@ use App\Http\Controllers\PageDetailController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CountryController;
 
 Route::post('/register', [UserController::class, 'registerUser']);
 Route::post('/login', [UserController::class, 'login']);
 
 Route::get('/user/user_get_all_products', [ProductController::class, 'userGetAllProducts']);
-
+Route::get('/get_country', [CountryController::class, 'getCountry']);
 
 Route::post('/admin/register', [AdminController::class, 'registerAdmin']);
 Route::post('/admin/login', [AdminController::class, 'loginAdmin']);
