@@ -13,29 +13,87 @@ use App\Models\Cart;
 class CheckoutController extends Controller
 {
     public function getCheckoutDetails(Request $request){
+        if($request->user_id == 0 || $request->user_id < 0 || $request->user_id == null){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'User does not exist, please login first!',
+            ], 200);
+        }
         $checkout = Checkout::where('user_id', $request->user_id)->first();
-        Log::info($checkout);
+       
         if($checkout){
+            $couponCode = $request->coupon_code ?? $checkout->coupon_code;
             $decodeIds = json_decode($checkout->cart_id);
-            Log::info('decodeIds : ', $decodeIds);
-            $carts = Cart::whereIn('id', $decodeIds)->get();
 
-            if ($carts->isNotEmpty()) {
+            $carts = Cart::whereIn('id', $decodeIds)
+                    ->where('is_checkout', 1)
+                    ->get();
+
+            if ($carts->isEmpty()) {
+                return response()->json([
+                    'success' => 'false',
+                    'message' => 'No items found in checkout',
+                ], 200);
+            }else{
+                $totalAmount = 0;
                 foreach ($carts as $cart) {
                     $product = Product::find($cart->product_id);
                     if ($product) {
                         $cart->product_name = $product->name;
                         $cart->product_price = $product->price;
+                        $cart->coupon = $checkout->coupon_code;
+
+                        $cart->total_price = $product->price * $cart->quantity;
+                        $totalAmount += $cart->total_price; 
+                    }
+                }
+                $discountAmount = 0;
+                $finalAmount = $totalAmount;
+                if($checkout->coupon_code != null || $request->coupon_code != null){
+                    $coupon_code = $request->coupon_code ?? $checkout->coupon_code;
+                    $coupon = Coupon::where('code', $coupon_code)
+                                    ->where('is_active', 1)
+                                    ->whereDate('expiry_date', '>=', now())->first();
+
+                    if (!$coupon) {
+                        return $this->generalResponse(false, 'Invalid or expired coupon code ' . $coupon_code . ' !', $carts, $totalAmount, 0, $totalAmount, null);
+                    }
+                    else{
+                        if ($totalAmount < $coupon->min_order_amount) {
+                            return $this->generalResponse(false, 'Minimum order amount not met for this coupon!', $carts, $totalAmount, 0, $totalAmount, null);
+                        }
+                        if ($coupon->discount_type === 'percentage') {
+                            $discountAmount = ($totalAmount * $coupon->discount_value) / 100;
+                        } else {
+                            $discountAmount = $coupon->discount_value;
+                        }
+                        $finalAmount = max(0, $totalAmount - $discountAmount);
                     }
                 }
             }
-            return response()->json([
-                'success' => 'true',
-                'message' => 'Checkout details',
-                'checkout' => $checkout,
-                'carts' => $carts,
-            ], 200);
+            
+            if( ($request->coupon_code == null || $request->coupon_code == '' || $request->coupon_code == 'null') && $request->is_params == true){
+                return $this->generalResponse(false, 'Coupon is empty, please input a valid coupon!', $carts, $totalAmount, $discountAmount, $finalAmount, $couponCode);
+            }
+            if($request->is_params == true && $request->coupon_code != null){
+                return $this->generalResponse(true, "Successfully applied coupon with the discount amount of $" . number_format($discountAmount, 2) . "!", $carts, $totalAmount, $discountAmount, $finalAmount, $couponCode);
+            }else{
+                return $this->generalResponse(true, 'Checkout details', $carts, $totalAmount, $discountAmount, $finalAmount, $couponCode);
+            }
         }
+    }
+
+    private function generalResponse($success, $message, $carts, $totalAmount, $discountAmount, $finalAmount, $couponCode)
+    {
+        return response()->json([
+            'success' => $success ? 'true' : 'false',
+            'message' => $message,
+            'checkout' => $carts,
+            'total_amount' => number_format($totalAmount, 2),
+            'discount' => number_format($discountAmount, 2),
+            'final_amount' => number_format($finalAmount, 2),
+            'applied_coupon' => $couponCode,
+        ], 200);
     }
 
     public function addToCheckout (Request $request){

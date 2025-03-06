@@ -31,17 +31,12 @@
 		          <div class="p-3 p-lg-5 border bg-white">
 		            <div class="form-group">
 		              <label for="c_country" class="text-black">Country <span class="text-danger">*</span></label>
-		              <select id="c_country" class="form-control">
-		                <option value="1">Select a country</option>    
-		                <option value="2">bangladesh</option>    
-		                <option value="3">Algeria</option>    
-		                <option value="4">Afghanistan</option>    
-		                <option value="5">Ghana</option>    
-		                <option value="6">Albania</option>    
-		                <option value="7">Bahrain</option>    
-		                <option value="8">Colombia</option>    
-		                <option value="9">Dominican Republic</option>    
-		              </select>
+		              	<select v-model="selectedCountry" class="form-control">
+							<option value="">Select a country</option>
+							<option v-for="country in countries" :key="country.code" :value="country.code">
+							{{ country.name }}
+							</option>
+						</select>
 		            </div>
 		            <div class="form-group row">
 		              <div class="col-md-6">
@@ -201,9 +196,9 @@
 
 		                <label for="c_code" class="text-black mb-3">Enter your coupon code if you have one</label>
 		                <div class="input-group w-75 couponcode-wrap">
-		                  <input type="text" class="form-control me-2" id="c_code" placeholder="Coupon Code" aria-label="Coupon Code" aria-describedby="button-addon2">
+		                  <input type="text" class="form-control me-2" id="c_code" v-model="coupon_code" placeholder="Coupon Code" aria-label="Coupon Code" aria-describedby="button-addon2">
 		                  <div class="input-group-append">
-		                    <button class="btn btn-black btn-sm" type="button" id="button-addon2">Apply</button>
+		                    <button class="btn btn-black btn-sm" type="button" id="button-addon2" @click="applyCoupon( { coupon_code: coupon_code, is_params  : true})">Apply</button>
 		                  </div>
 		                </div>
 
@@ -218,24 +213,29 @@
 		                <table class="table site-block-order-table mb-5">
 		                  <thead>
 		                    <th>Product</th>
+							<th>Qty</th>
 		                    <th>Total</th>
 		                  </thead>
 		                  <tbody>
-		                    <tr>
-		                      <td>Top Up T-Shirt <strong class="mx-2">x</strong> 1</td>
-		                      <td>$250.00</td>
-		                    </tr>
-		                    <tr>
-		                      <td>Polo Shirt <strong class="mx-2">x</strong>   1</td>
-		                      <td>$100.00</td>
-		                    </tr>
+		                    <tr v-for="product in products" :key="product.id">
+								<td>{{ product.product_name }} <strong class="mx-2"></strong></td>
+								<td>{{ product.quantity }}</td>
+								<td>${{ product.total_price.toFixed(2) }}</td>
+							</tr>
 		                    <tr>
 		                      <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
-		                      <td class="text-black">$350.00</td>
+							  <td></td>
+		                      <td class="text-black"> {{ cart_sub_total_amount ? "$" + cart_sub_total_amount : 0 }}</td>
+		                    </tr>
+							<tr>
+		                      <td class="text-black font-weight-bold"><strong>Discount Total</strong></td>
+							  <td></td>
+		                      <td class="text-black font-weight-bold">{{ discount ? "$" + discount : 0 }}</td>
 		                    </tr>
 		                    <tr>
 		                      <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
-		                      <td class="text-black font-weight-bold"><strong>$350.00</strong></td>
+							  <td></td>
+		                      <td class="text-black font-weight-bold"><strong>{{ order_total_amount ? "$" + order_total_amount : 0 }}</strong></td>
 		                    </tr>
 		                  </tbody>
 		                </table>
@@ -285,3 +285,164 @@
 		  </div>
 
 </template>
+
+<script>
+import apiRequest from '@/services/apiService';
+import showAlert from '@/services/swalAlert';
+
+export default {
+	data() {
+		return {
+			products: [],
+			coupon_code : '',
+			cart_sub_total_amount: 0,
+			order_total_amount: 0,
+			discount : 0,
+			countries: [
+				{ code: "AF", name: "Afghanistan" },
+				{ code: "AL", name: "Albania" },
+				{ code: "DZ", name: "Algeria" },
+				{ code: "AD", name: "Andorra" },
+				{ code: "AO", name: "Angola" },
+				{ code: "AG", name: "Antigua and Barbuda" },
+				{ code: "AR", name: "Argentina" },
+				{ code: "AM", name: "Armenia" },
+				{ code: "AU", name: "Australia" },
+				{ code: "AT", name: "Austria" },
+				{ code: "AZ", name: "Azerbaijan" },
+				{ code: "BS", name: "Bahamas" },
+				{ code: "BH", name: "Bahrain" },
+				{ code: "BD", name: "Bangladesh" },
+				{ code: "BB", name: "Barbados" },
+				{ code: "BY", name: "Belarus" },
+				{ code: "BE", name: "Belgium" },
+				{ code: "BZ", name: "Belize" },
+				{ code: "BJ", name: "Benin" },
+				{ code: "BT", name: "Bhutan" },
+				{ code: "BO", name: "Bolivia" },
+				{ code: "BA", name: "Bosnia and Herzegovina" },
+				{ code: "BW", name: "Botswana" },
+				{ code: "BR", name: "Brazil" },
+				{ code: "BN", name: "Brunei" },
+				{ code: "BG", name: "Bulgaria" },
+				{ code: "BF", name: "Burkina Faso" },
+				{ code: "BI", name: "Burundi" },
+				{ code: "KH", name: "Cambodia" },
+				{ code: "CM", name: "Cameroon" },
+				{ code: "CA", name: "Canada" },
+				{ code: "CV", name: "Cape Verde" },
+				{ code: "TD", name: "Chad" },
+				{ code: "CL", name: "Chile" },
+				{ code: "CN", name: "China" },
+				{ code: "CO", name: "Colombia" },
+				{ code: "KM", name: "Comoros" },
+				{ code: "CR", name: "Costa Rica" },
+				{ code: "HR", name: "Croatia" },
+				{ code: "CU", name: "Cuba" },
+				{ code: "CY", name: "Cyprus" },
+				{ code: "CZ", name: "Czech Republic" },
+				{ code: "DK", name: "Denmark" },
+				{ code: "DO", name: "Dominican Republic" },
+				{ code: "EC", name: "Ecuador" },
+				{ code: "EG", name: "Egypt" },
+				{ code: "FI", name: "Finland" },
+				{ code: "FR", name: "France" },
+				{ code: "GA", name: "Gabon" },
+				{ code: "DE", name: "Germany" },
+				{ code: "GH", name: "Ghana" },
+				{ code: "GR", name: "Greece" },
+				{ code: "IN", name: "India" },
+				{ code: "ID", name: "Indonesia" },
+				{ code: "IE", name: "Ireland" },
+				{ code: "IT", name: "Italy" },
+				{ code: "JP", name: "Japan" },
+				{ code: "KE", name: "Kenya" },
+				{ code: "KR", name: "South Korea" },
+				{ code: "KW", name: "Kuwait" },
+				{ code: "LA", name: "Laos" },
+				{ code: "LV", name: "Latvia" },
+				{ code: "LB", name: "Lebanon" },
+				{ code: "LY", name: "Libya" },
+				{ code: "LT", name: "Lithuania" },
+				{ code: "LU", name: "Luxembourg" },
+				{ code: "MY", name: "Malaysia" },
+				{ code: "MX", name: "Mexico" },
+				{ code: "NG", name: "Nigeria" },
+				{ code: "NO", name: "Norway" },
+				{ code: "PK", name: "Pakistan" },
+				{ code: "PH", name: "Philippines" },
+				{ code: "PL", name: "Poland" },
+				{ code: "PT", name: "Portugal" },
+				{ code: "RO", name: "Romania" },
+				{ code: "RU", name: "Russia" },
+				{ code: "SA", name: "Saudi Arabia" },
+				{ code: "SG", name: "Singapore" },
+				{ code: "ES", name: "Spain" },
+				{ code: "SE", name: "Sweden" },
+				{ code: "CH", name: "Switzerland" },
+				{ code: "AE", name: "United Arab Emirates" },
+				{ code: "GB", name: "United Kingdom" },
+				{ code: "US", name: "United States" }
+			],
+		}
+	}, 
+	mounted(){
+		this.getCheckoutDetails();
+	},
+	methods: {
+
+		async getCheckoutDetails(){
+			try {
+				const userData = localStorage.getItem('user');
+				const user = JSON.parse(userData);
+
+				const formData = new FormData();
+				formData.append('user_id', user.id);
+
+				const response = await apiRequest.getCheckoutDetails(formData);
+				if(response.data.success === 'true'){
+					this.products = response.data.checkout;
+					this.coupon_code = response.data.applied_coupon;
+					this.cart_sub_total_amount = response.data.total_amount;
+					this.order_total_amount = response.data.final_amount;
+					this.discount = response.data.discount;
+					console.log(response.data);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		},
+		async applyCoupon(params) {
+			try {
+				const userData = localStorage.getItem('user');
+				const user = JSON.parse(userData);
+
+				const formData = new FormData();
+				formData.append('user_id', user.id);
+				formData.append('coupon_code', params.coupon_code);
+				formData.append('is_params', params.is_params);
+
+				const response = await apiRequest.getCheckoutDetails(formData);
+				if(response.data.success === 'true'){
+					showAlert("success", "Success", response.data.message);
+					this.products = response.data.checkout;
+					this.coupon_code = response.data.applied_coupon;
+					this.cart_sub_total_amount = response.data.total_amount;
+					this.order_total_amount = response.data.final_amount;
+					this.discount = response.data.discount;
+				}
+				if(response.data.success === 'false'){
+					showAlert("error", "Oops!", response.data.message);
+					this.products = response.data.checkout;
+					this.coupon_code = response.data.applied_coupon;
+					this.cart_sub_total_amount = response.data.total_amount;
+					this.order_total_amount = response.data.final_amount;
+					this.discount = response.data.discount;
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		}
+	}
+}
+</script>

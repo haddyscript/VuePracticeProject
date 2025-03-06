@@ -67,6 +67,9 @@ const apiServicesToReUse = {
     proceedToCheckout(formData){
         return apiRequest.post('/user/proceed_to_checkout', formData);
     },
+    getCheckoutDetails(formData){
+        return apiRequest.post('/user/checkout_items', formData);
+    },
 
     //-------------------------------------//
     // This is for admin section api routes//
