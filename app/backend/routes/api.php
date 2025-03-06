@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin', function (Request $request){
         return $request->user();
     });
-
+    Route::post('/user/update_user', [UserController::class, 'updateUser']);
     Route::post('/user/add_to_cart', [CartController::class, 'addToCart']);
     Route::post('/user/get_products_in_cart', [CartController::class, 'getProductInCart']);
     Route::post('/user/delete_product_in_cart', [CartController::class, 'removeFromCart']);

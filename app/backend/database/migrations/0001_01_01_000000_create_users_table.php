@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('state', 100)->nullable();
             $table->string('country', 100)->nullable();
             $table->string('postal_code', 20)->nullable();
-            $table->string('profile_picture')->nullable();
+            $table->longBlob('profile_picture')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_verified')->default(false);
             $table->rememberToken();

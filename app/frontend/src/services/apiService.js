@@ -43,6 +43,12 @@ const apiServicesToReUse = {
     userLogin(formData){
         return apiRequest.post('/login', formData);
     },
+    getUser(){
+        return apiRequest.get('/user');
+    },
+    updateUser(formData){
+        return apiRequest.post('/user/update_user', formData);
+    },
     userLogout(){
         return apiRequest.post('/logout');
     },

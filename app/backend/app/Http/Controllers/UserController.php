@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Checkout;
+use Carbon\Carbon;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -164,4 +165,70 @@ class UserController extends Controller
             'message' => 'Unauthorized'
         ), 401);
     }
+
+    public function updateUser(Request $request)
+    {
+        $checkAge = $this->checkAge($request);
+        if($checkAge != null){
+            return $checkAge;
+        }
+        $user = User::where('id', $request->user_id)->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'gender' => $request->gender,
+            'date_of_birth' => $request->date_of_birth,
+            'phone_number' => $request->phone_number,
+            'address' => $request->address,
+            'city' => $request->city,
+            'state' => $request->state,
+            'country' => $request->country,
+            'postal_code' => $request->postal_code
+        ]);
+        if (!$user) {
+            return response()->json([
+                'success' => "false",
+                'status' => 'error',
+                'message' => 'User details update failed, please try again!',
+            ]);
+        }
+
+        return response()->json([
+            'success' => 'true',
+            'status' => 'success',
+            'message' => 'Profile updated successfully',
+            'user' =>  User::where('id', $request->user_id)->first()
+        ], 200);
+    }
+
+    private function checkAge($request){
+        if (!empty($request->date_of_birth)) {  
+            $birthdate = strtotime($request->date_of_birth); 
+            $birthYear = date('Y', $birthdate);
+            $birthMonth = date('m', $birthdate);
+            $birthDay = date('d', $birthdate);
+        
+            // Get current date
+            $currentYear = date('Y');
+            $currentMonth = date('m');
+            $currentDay = date('d');
+        
+            $age = $currentYear - $birthYear;
+        
+            if (($currentMonth < $birthMonth) || ($currentMonth == $birthMonth && $currentDay < $birthDay)) {
+                $age--;
+            }
+        
+            if ($age < 18) {
+                return response()->json([
+                    'success' => 'false',
+                    'status' => 'error',
+                    'message' => 'User must be at least 18 years old'
+                ], 200);
+            }
+        }
+        return null;
+    }
+
+
 }

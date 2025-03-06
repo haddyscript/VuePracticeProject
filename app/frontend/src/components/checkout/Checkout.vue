@@ -44,17 +44,17 @@
 		            <div class="form-group row">
 		              <div class="col-md-6">
 		                <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
-		                <input type="text" class="form-control" id="c_fname" name="c_fname">
+		                <input type="text" class="form-control" v-model="user.first_name" id="c_fname" name="c_fname">
 		              </div>
 		              <div class="col-md-6">
 		                <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
-		                <input type="text" class="form-control" id="c_lname" name="c_lname">
+		                <input type="text" class="form-control" v-model="user.last_name" id="c_lname" name="c_lname">
 		              </div>
 		            </div>
 
 		            <div class="form-group row">
 		              <div class="col-md-12">
-		                <label for="c_companyname" class="text-black">Company Name </label>
+		                <label for="c_companyname" class="text-black">Land Mark / Company Name / Building Name </label>
 		                <input type="text" class="form-control" id="c_companyname" name="c_companyname">
 		              </div>
 		            </div>
@@ -62,7 +62,7 @@
 		            <div class="form-group row">
 		              <div class="col-md-12">
 		                <label for="c_address" class="text-black">Address <span class="text-danger">*</span></label>
-		                <input type="text" class="form-control" id="c_address" name="c_address" placeholder="Street address">
+		                <input type="text" class="form-control" v-model="user.address" id="c_address" name="c_address" placeholder="Street address">
 		              </div>
 		            </div>
 
@@ -73,7 +73,7 @@
 		            <div class="form-group row">
 		              <div class="col-md-6">
 		                <label for="c_state_country" class="text-black">State / Country <span class="text-danger">*</span></label>
-		                <input type="text" class="form-control" id="c_state_country" name="c_state_country">
+		                <input type="text" class="form-control" v-model="user.state" id="c_state_country" name="c_state_country">
 		              </div>
 		              <div class="col-md-6">
 		                <label for="c_postal_zip" class="text-black">Posta / Zip <span class="text-danger">*</span></label>
@@ -84,11 +84,11 @@
 		            <div class="form-group row mb-5">
 		              <div class="col-md-6">
 		                <label for="c_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
-		                <input type="text" class="form-control" id="c_email_address" name="c_email_address">
+		                <input type="text" class="form-control" v-model="user.email" id="c_email_address" name="c_email_address">
 		              </div>
 		              <div class="col-md-6">
 		                <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
-		                <input type="text" class="form-control" id="c_phone" name="c_phone" placeholder="Phone Number">
+		                <input type="text" class="form-control" v-model="user.phone" id="c_phone" name="c_phone" placeholder="Phone Number">
 		              </div>
 		            </div>
 
@@ -162,8 +162,8 @@
 		                      <input type="text" class="form-control" id="c_diff_state_country" name="c_diff_state_country">
 		                    </div>
 		                    <div class="col-md-6">
-		                      <label for="c_diff_postal_zip" class="text-black">Posta / Zip <span class="text-danger">*</span></label>
-		                      <input type="text" class="form-control" id="c_diff_postal_zip" name="c_diff_postal_zip">
+		                      <label for="c_diff_postal_zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
+		                      <input type="text" class="form-control" id="c_diff_postal_zip" v-model="user.postal_code" name="c_diff_postal_zip">
 		                    </div>
 		                  </div>
 
@@ -297,6 +297,7 @@ export default {
 	data() {
 		return {
 			isLoading: true,
+			user: [],
 			products: [],
 			coupon_code : '',
 			cart_sub_total_amount: 0,
@@ -392,12 +393,23 @@ export default {
 	}, 
 	mounted(){
 		this.getCheckoutDetails();
+		this.getUser();
 		setTimeout(() => {
 			this.isLoading = false; 
 		}, 1000);
 	},
 	methods: {
-
+		async getUser(){
+			try {
+				const response = await apiRequest.getUser();
+				if(response.data != undefined){
+					this.user = response.data;
+					console.log("user data : ", this.user);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		},
 		async getCheckoutDetails(){
 			try {
 				const userData = localStorage.getItem('user');
@@ -413,7 +425,6 @@ export default {
 					this.cart_sub_total_amount = response.data.total_amount;
 					this.order_total_amount = response.data.final_amount;
 					this.discount = response.data.discount;
-					console.log(response.data);
 				}
 			} catch (error) {
 				console.log(error);

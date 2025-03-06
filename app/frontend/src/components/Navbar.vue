@@ -34,6 +34,7 @@
                 {{ user.first_name }} {{ user.last_name }}
               </a>
               <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" @click="goToProfile">Account</a></li>
                 <li><a class="dropdown-item" href="#" @click="logout">Logout</a></li>
               </ul>
             </li>
@@ -109,6 +110,10 @@ export default {
     });
   },
   methods: {
+
+    goToProfile() {
+      window.location.href = '/account';
+    },
 
     async logout() {
       try {
