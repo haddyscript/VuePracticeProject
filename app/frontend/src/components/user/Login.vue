@@ -75,10 +75,8 @@ export default{
        async submitForm(){
             try{
                 const response = await apiRequest.userLogin(this.form);
-                console.log(response.data);
                 if(response.data.success == "true"){
 
-                    console.log(response.data);
                     localStorage.setItem('user', JSON.stringify(response.data.user));
                     localStorage.setItem('token', response.data.token);
 
@@ -92,7 +90,9 @@ export default{
                         }
                     }).then(() =>{
                         if(response.data.have_checkout == true){
-                            this.$router.push('/checkout');
+                            this.$router.push('/checkout').then(() => {
+                                window.location.reload();
+                            });
                         }else{
                             this.$router.push('/').then(() => {
                                 window.location.reload();
