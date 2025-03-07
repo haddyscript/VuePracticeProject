@@ -220,7 +220,21 @@
 		      <!-- </form> -->
 		    </div>
 		  </div>
+				<!-- GCash Modal -->
+				<div v-if="showGcashModal" class="modal-overlay">
+					<div class="modal-content">
+						<h3>Pay with GCash</h3>
+						<p>Amount to Pay: <strong>P{{ order_total_amount }}</strong></p>
+						
+						<label for="gcashNumber">GCash Number:</label>
+						<input type="text" id="gcashNumber" v-model="gcashNumber" class="form-control" placeholder="Enter your GCash number" />
 
+						<div class="modal-actions">
+							<button class="btn btn-success" @click="confirmGcashPayment">Confirm Payment</button>
+							<button class="btn btn-danger" @click="closeGcashModal">Cancel</button>
+						</div>
+					</div>
+				</div>
 </template>
 
 <script>
@@ -242,7 +256,9 @@ export default {
 			mode_of_payment: 0,
 			landmark_company_building : '',
 			apartment_suite_unit : '',
-			order_notes : ''
+			order_notes : '',
+			showGcashModal: false,
+    		gcashNumber: "",
 		}
 	}, 
 	mounted(){
@@ -345,19 +361,38 @@ export default {
 			return formData;
 		}, 
 		async placeOrder() {
-			try{
+			if (this.mode_of_payment == 4) {
 
-				const response = await apiRequest.placeOrder(this.prepareParams());
+				this.showGcashModal = true;
+				return;
+			}
 
-				if(response.data.success == "true"){
-					showAlert("success", "Success", response.data.message);
-					this.$router.push('/thankyou');
-				}else{
-					showAlert("error", "Oops!", response.data.message);
-				}
+			this.submitOrder();
+		},
+		async confirmGcashPayment() {
+			if (!this.gcashNumber) {
+			alert("Please enter your GCash number.");
+			return;
+			}
 
-			}catch(error){
-				console.log(error);
+			this.showGcashModal = false; 
+			this.submitOrder();
+		},
+		closeGcashModal() {
+			this.showGcashModal = false;
+		},
+		async submitOrder() {
+			try {
+			const response = await apiRequest.placeOrder(this.prepareParams());
+
+			if (response.data.success == "true") {
+				showAlert("success", "Success", response.data.message);
+				this.$router.push("/thankyou");
+			} else {
+				showAlert("error", "Oops!", response.data.message);
+			}
+			} catch (error) {
+			console.log(error);
 			}
 		}
 
@@ -398,4 +433,37 @@ export default {
         background-color: #3b5d50;
         border-color: #3b5d50;
     }
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  width: 40%;
+}
+.gcashNumber{
+	text-align: center;
+	width: 20px !important;
+}
+
+.modal-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+}
+
 </style>
