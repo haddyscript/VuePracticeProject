@@ -12,6 +12,14 @@ use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\OrderBillingDetailsController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\XenditPaymentController;
+
+Route::post('/xendit/payment_invoice', [XenditPaymentController::class, 'createInvoice']);
+Route::post('/xendit/test_curl_invoice', [XenditPaymentController::class, 'testXenditAPI']);
+Route::post('/xendit/webhook', [XenditPaymentController::class, 'handleWebhook']);
+
+Route::post('/xendit/payments', [PaymentController::class, 'handlePayment']);
 
 Route::post('/register', [UserController::class, 'registerUser']);
 Route::post('/login', [UserController::class, 'login']);

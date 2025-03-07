@@ -7,7 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BusinessDetailController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CheckoutController;
-
+use App\Http\Controllers\PaymentController;
 
 Route::post('/register', [UserController::class, 'registerUser']);
 Route::post('/login', [UserController::class, 'login']);
@@ -19,6 +19,7 @@ Route::get('/admin/get_business_detail', [BusinessDetailController::class, 'getB
 Route::get('/admin/get_all_products', [ProductController::class, 'getAllProducts']);
 Route::get('/admin/get_product/{id}', [ProductController::class, 'getProductById']);
 
+Route::get('/pay', [PaymentController::class, 'createInvoice']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
