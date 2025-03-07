@@ -251,57 +251,51 @@ export default {
 				console.log(error);
 			}
 		},
-		async getCheckoutDetails(){
+		async fetchCheckoutDetails(formData, showAlertOnFailure = false) {
 			try {
-				const userData = localStorage.getItem('user');
-				const user = JSON.parse(userData);
-
-				const formData = new FormData();
-				formData.append('user_id', user.id);
-
 				const response = await apiRequest.getCheckoutDetails(formData);
-				if(response.data.success === 'true'){
-					this.products = response.data.checkout;
-					this.coupon_code = response.data.applied_coupon;
-					this.cart_sub_total_amount = response.data.total_amount;
-					this.order_total_amount = response.data.final_amount;
-					this.discount = response.data.discount;
+				if (response.data.success === 'true') {
+					this.updateCheckoutState(response.data);
+					if (showAlertOnFailure) showAlert("success", "Success", response.data.message);
+				} else if (showAlertOnFailure) {
+					showAlert("error", "Oops!", response.data.message);
+					this.updateCheckoutState(response.data);
 				}
 			} catch (error) {
 				console.log(error);
 			}
 		},
+
+		updateCheckoutState(data) {
+			this.products = data.checkout;
+			this.coupon_code = data.applied_coupon ? data.applied_coupon : this.coupon_code;
+			this.cart_sub_total_amount = data.total_amount;
+			this.order_total_amount = data.final_amount;
+			this.discount = data.discount;
+		},
+
+		async getCheckoutDetails() {
+			const user = JSON.parse(localStorage.getItem('user'));
+			if (!user) return;
+
+			const formData = new FormData();
+			formData.append('user_id', user.id);
+
+			await this.fetchCheckoutDetails(formData);
+		},
+
 		async applyCoupon(params) {
-			try {
-				const userData = localStorage.getItem('user');
-				const user = JSON.parse(userData);
+			const user = JSON.parse(localStorage.getItem('user'));
+			if (!user) return;
 
-				const formData = new FormData();
-				formData.append('user_id', user.id);
-				formData.append('coupon_code', params.coupon_code);
-				formData.append('is_params', params.is_params);
+			const formData = new FormData();
+			formData.append('user_id', user.id);
+			formData.append('coupon_code', params.coupon_code);
+			formData.append('is_params', params.is_params);
 
-				const response = await apiRequest.getCheckoutDetails(formData);
-				if(response.data.success === 'true'){
-					showAlert("success", "Success", response.data.message);
-					this.products = response.data.checkout;
-					this.coupon_code = response.data.applied_coupon;
-					this.cart_sub_total_amount = response.data.total_amount;
-					this.order_total_amount = response.data.final_amount;
-					this.discount = response.data.discount;
-				}
-				if(response.data.success === 'false'){
-					showAlert("error", "Oops!", response.data.message);
-					this.products = response.data.checkout;
-					this.coupon_code = response.data.applied_coupon;
-					this.cart_sub_total_amount = response.data.total_amount;
-					this.order_total_amount = response.data.final_amount;
-					this.discount = response.data.discount;
-				}
-			} catch (error) {
-				console.log(error);
-			}
+			await this.fetchCheckoutDetails(formData, true);
 		}
+
 	}
 }
 </script>
