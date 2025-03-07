@@ -55,7 +55,7 @@
 		            <div class="form-group row">
 		              <div class="col-md-12">
 		                <label for="c_companyname" class="text-black">Land Mark / Company Name / Building Name </label>
-		                <input type="text" class="form-control" id="c_companyname" name="c_companyname">
+		                <input type="text" class="form-control" id="c_companyname" v-model="landmark_company_building" name="c_companyname">
 		              </div>
 		            </div>
 
@@ -67,7 +67,7 @@
 		            </div>
 
 		            <div class="form-group mt-3">
-		              <input type="text" class="form-control" placeholder="Apartment, suite, unit etc. (optional)">
+		              <input type="text" class="form-control" v-model="apartment_suite_unit" placeholder="Apartment, suite, unit etc. (optional)">
 		            </div>
 
 		            <div class="form-group row">
@@ -94,7 +94,7 @@
 
 		            <div class="form-group">
 		              <label for="c_order_notes" class="text-black">Order Notes</label>
-		              <textarea name="c_order_notes" id="c_order_notes" cols="30" rows="5" class="form-control" placeholder="Write your notes here..."></textarea>
+		              <textarea name="c_order_notes" id="c_order_notes" v-model="order_notes" cols="30" rows="5" class="form-control" placeholder="Write your notes here..."></textarea>
 		            </div>
 
 		          </div>
@@ -132,30 +132,50 @@
 		                  <tbody>
 		                    <tr v-for="product in products" :key="product.id">
 								<td>{{ product.product_name }} <strong class="mx-2"></strong></td>
-								<td>${{ product.product_price }}</td>
+								<td>P{{ product.product_price }}</td>
 								<td>{{ product.quantity }}</td>
-								<td>${{ product.total_price.toFixed(2) }}</td>
+								<td>P{{ product.total_price.toFixed(2) }}</td>
 							</tr>
 		                    <tr>
 		                      <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
 							  <td></td>
 							  <td></td>
-		                      <td class="text-black"> {{ cart_sub_total_amount ? "$" + cart_sub_total_amount : 0 }}</td>
+		                      <td class="text-black"> {{ cart_sub_total_amount ? "P" + cart_sub_total_amount : 0 }}</td>
 		                    </tr>
 							<tr>
 		                      <td class="text-black font-weight-bold"><strong>Discount Total</strong></td>
 							  <td></td>
 							  <td></td>
-		                      <td class="text-black font-weight-bold">{{ discount ? "$" + discount : 0 }}</td>
+		                      <td class="text-black font-weight-bold">{{ discount ? "P" + discount : 0 }}</td>
 		                    </tr>
 		                    <tr>
 		                      <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
 							  <td></td>
 							  <td></td>
-		                      <td class="text-black font-weight-bold"><strong>{{ order_total_amount ? "$" + order_total_amount : 0 }}</strong></td>
+		                      <td class="text-black font-weight-bold"><strong>{{ order_total_amount ? "P" + order_total_amount : 0 }}</strong></td>
 		                    </tr>
 		                  </tbody>
 		                </table>
+
+						<div class="border p-3 mb-3">
+							<h3 class="h6 mb-0">Method of Payment</h3>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="payment_method" id="cod" value="1" @click="mode_of_payment=1">
+								<label class="form-check-label payment-label" for="cod">Cash On Delivery</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="payment_method" id="bank" value="2" @click="mode_of_payment=2">
+								<label class="form-check-label payment-label" for="bank">Bank Transfer</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="payment_method" id="paypal" value="3" @click="mode_of_payment=3">
+								<label class="form-check-label payment-label" for="paypal">Pay Pal</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="payment_method" id="gcash" value="4" @click="mode_of_payment=4">
+								<label class="form-check-label payment-label" for="gcash">Gcash</label>
+							</div>
+						</div>
 
 		                <div class="border p-3 mb-3">
 		                  <h3 class="h6 mb-0"><a class="d-block" data-bs-toggle="collapse" href="#collapsebank" role="button" aria-expanded="false" aria-controls="collapsebank">Direct Bank Transfer</a></h3>
@@ -188,7 +208,7 @@
 		                </div>
 
 		                <div class="form-group">
-		                  <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='thankyou.html'">Place Order</button>
+		                  <button class="btn btn-black btn-lg py-3 btn-block" @click="placeOrder()">Place Order</button>
 		                </div>
 
 		              </div>
@@ -218,7 +238,11 @@ export default {
 			order_total_amount: 0,
 			discount : 0,
 			countries: [],
-			selectedCountry: ""
+			selectedCountry: "",
+			mode_of_payment: 0,
+			landmark_company_building : '',
+			apartment_suite_unit : '',
+			order_notes : ''
 		}
 	}, 
 	mounted(){
@@ -268,7 +292,7 @@ export default {
 
 		updateCheckoutState(data) {
 			this.products = data.checkout;
-			this.coupon_code = data.applied_coupon ? data.applied_coupon : this.coupon_code;
+			this.coupon_code = data.applied_coupon;
 			this.cart_sub_total_amount = data.total_amount;
 			this.order_total_amount = data.final_amount;
 			this.discount = data.discount;
@@ -294,6 +318,47 @@ export default {
 			formData.append('is_params', params.is_params);
 
 			await this.fetchCheckoutDetails(formData, true);
+		},
+		prepareParams() {
+			const formData = new FormData();
+
+			formData.append('country', this.selectedCountry);
+			formData.append('user_id', this.user.id);
+			formData.append('first_name', this.user.first_name);
+			formData.append('last_name', this.user.last_name);
+			formData.append('landmark_company_building', this.landmark_company_building);
+			formData.append('address', this.user.address);
+			formData.append('apartment_suite_unit', this.apartment_suite_unit);
+			formData.append('state_country', this.user.state);
+			formData.append('postal_zip', this.user.postal_code);
+			formData.append('email_address', this.user.email);
+			formData.append('phone', this.user.phone_number);
+			formData.append('order_notes', this.order_notes);
+			formData.append('coupon_code', this.coupon_code);
+			formData.append('product_details', JSON.stringify(this.products));
+			formData.append('cart_subtotal', this.cart_sub_total_amount);
+			formData.append('order_total', this.order_total_amount);
+			formData.append('discount_total', this.discount);
+			formData.append('mode_of_payment', this.mode_of_payment);
+			formData.append('is_paid', 0);
+
+			return formData;
+		}, 
+		async placeOrder() {
+			try{
+
+				const response = await apiRequest.placeOrder(this.prepareParams());
+
+				if(response.data.success == "true"){
+					showAlert("success", "Success", response.data.message);
+					this.$router.push('/thankyou');
+				}else{
+					showAlert("error", "Oops!", response.data.message);
+				}
+
+			}catch(error){
+				console.log(error);
+			}
 		}
 
 	}
@@ -329,4 +394,8 @@ export default {
   100% { transform: rotate(360deg); }
 }
 
+.form-check-input:checked {
+        background-color: #3b5d50;
+        border-color: #3b5d50;
+    }
 </style>

@@ -139,7 +139,7 @@ class UserController extends Controller
         return $result;
     }
     private function checkExistingCheckout($user_id){
-        $checkout = Checkout::where('user_id', $user_id)->first();
+        $checkout = Checkout::where('user_id', $user_id)->where('is_place_order', 0)->first();
         return $checkout ? true : false;
     }
 

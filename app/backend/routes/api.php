@@ -11,6 +11,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\OrderBillingDetailsController;
 
 Route::post('/register', [UserController::class, 'registerUser']);
 Route::post('/login', [UserController::class, 'login']);
@@ -42,6 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/get_cart_count', [CartController::class, 'getCartCountItems']);
     Route::post('/user/proceed_to_checkout', [CheckoutController::class, 'addToCheckout']);
     Route::post('/user/checkout_items', [CheckoutController::class, 'getCheckoutDetails']);
+
+    Route::post('/user/place_order', [OrderBillingDetailsController::class, 'addToOrder']);
 
     Route::post('/admin/create_buiness_detail', [BusinessDetailController::class, 'createBusinessGeneralDetail']);
     Route::post('/admin/update_detail', [AdminController::class, 'changeAdminDetail']);

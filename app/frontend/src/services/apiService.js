@@ -78,6 +78,9 @@ const apiServicesToReUse = {
     getCheckoutDetails(formData){
         return apiRequest.post('/user/checkout_items', formData);
     },
+    placeOrder(formData){
+        return apiRequest.post('/user/place_order', formData);
+    },
 
     //-------------------------------------//
     // This is for admin section api routes//

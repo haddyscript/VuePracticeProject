@@ -16,6 +16,7 @@ return new class extends Migration
             $table->int('user_id');
             $table->json('cart_id'); 
             $table->string('coupon_code')->nullable(); 
+            $table->integer('is_place_order')->default(0)->comment('0: no, 1: yes')->after('coupon_code');
             $table->timestamp('created_at')->useCurrent(); 
             $table->timestamp('updated_at')->nullable(); 
         });

@@ -19,12 +19,12 @@ class CheckoutController extends Controller
                 'message' => 'User does not exist, please login first!',
             ], 200);
         }
-        $checkout = Checkout::where('user_id', $request->user_id)->first();
+        $checkout = Checkout::where('user_id', $request->user_id)->where('is_place_order', 0)->first();
        
         if($checkout){
             $couponCode = $request->coupon_code ?? $checkout->coupon_code;
             $decodeIds = json_decode($checkout->cart_id);
-
+            
             $carts = Cart::whereIn('id', $decodeIds)
                     ->where('is_checkout', 1)
                     ->get();
@@ -42,6 +42,7 @@ class CheckoutController extends Controller
                         $cart->product_name = $product->name;
                         $cart->product_price = $product->price;
                         $cart->coupon = $checkout->coupon_code;
+                        $cart->checkout_id = $checkout->id;
 
                         $cart->total_price = $product->price * $cart->quantity;
                         $totalAmount += $cart->total_price; 

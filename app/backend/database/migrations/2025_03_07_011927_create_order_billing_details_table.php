@@ -11,6 +11,7 @@ class CreateOrderBillingDetailsTable extends Migration
         Schema::create('order_billing_details', function (Blueprint $table) {
             $table->id();
             $table->string('country', 100);
+            $table->int('user_id');
             $table->string('first_name', 100);
             $table->string('last_name', 100);
             $table->string('landmark_company_building', 255)->nullable();
@@ -22,11 +23,12 @@ class CreateOrderBillingDetailsTable extends Migration
             $table->string('phone', 20);
             $table->text('order_notes')->nullable();
             $table->string('coupon_code', 50)->nullable();
-            $table->unsignedBigInteger('product_id');
             $table->json('product_details');
             $table->decimal('cart_subtotal', 10, 2);
             $table->decimal('discount_total', 10, 2);
             $table->decimal('order_total', 10, 2);
+            $table->integer('mode_of_payment')->comment('1: COD, 2: Bank, 3: Paypal, 4: Gcash');
+            $table->integer('is_paid')->comment('0: not, 1: yes');
             $table->timestamps();
         });
     }
