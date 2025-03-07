@@ -36,7 +36,7 @@
 		              <label for="c_country" class="text-black">Country <span class="text-danger">*</span></label>
 					  	<select v-model="selectedCountry" class="form-control" :required="true">
 							<option value="">Select a country</option>
-							<option v-for="place in countries" :key="place.id" :value="place.code">
+							<option v-for="place in countries" :key="place.id" :value="place.name">
 								{{ place.name }}
 							</option>
 						</select>
@@ -44,11 +44,11 @@
 		            <div class="form-group row">
 		              <div class="col-md-6">
 		                <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
-		                <input type="text" class="form-control" v-model="user.first_name" id="c_fname" name="c_fname">
+		                <input type="text" class="form-control" v-model="user.first_name" id="c_fname" name="c_fname" readonly style="background-color: white;">
 		              </div>
 		              <div class="col-md-6">
 		                <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
-		                <input type="text" class="form-control" v-model="user.last_name" id="c_lname" name="c_lname">
+		                <input type="text" class="form-control" v-model="user.last_name" id="c_lname" name="c_lname" readonly style="background-color: white;">
 		              </div>
 		            </div>
 
@@ -125,27 +125,32 @@
 		                <table class="table site-block-order-table mb-5">
 		                  <thead>
 		                    <th>Product</th>
+							<th>Price</th>
 							<th>Qty</th>
 		                    <th>Total</th>
 		                  </thead>
 		                  <tbody>
 		                    <tr v-for="product in products" :key="product.id">
 								<td>{{ product.product_name }} <strong class="mx-2"></strong></td>
+								<td>${{ product.product_price }}</td>
 								<td>{{ product.quantity }}</td>
 								<td>${{ product.total_price.toFixed(2) }}</td>
 							</tr>
 		                    <tr>
 		                      <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
 							  <td></td>
+							  <td></td>
 		                      <td class="text-black"> {{ cart_sub_total_amount ? "$" + cart_sub_total_amount : 0 }}</td>
 		                    </tr>
 							<tr>
 		                      <td class="text-black font-weight-bold"><strong>Discount Total</strong></td>
 							  <td></td>
+							  <td></td>
 		                      <td class="text-black font-weight-bold">{{ discount ? "$" + discount : 0 }}</td>
 		                    </tr>
 		                    <tr>
 		                      <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
+							  <td></td>
 							  <td></td>
 		                      <td class="text-black font-weight-bold"><strong>{{ order_total_amount ? "$" + order_total_amount : 0 }}</strong></td>
 		                    </tr>
@@ -240,6 +245,7 @@ export default {
 				const response = await apiRequest.getUser();
 				if(response.data != undefined){
 					this.user = response.data;
+					this.selectedCountry = this.user.country;
 				}
 			} catch (error) {
 				console.log(error);

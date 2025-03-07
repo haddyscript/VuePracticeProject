@@ -100,11 +100,11 @@
 
                 <div class="form-group">
                     <select v-model="selectedCountry" class="form-control" :required="true" @change="updateCountry">
-							<option value="">Select a country</option>
-							<option v-for="place in countries" :key="place.id" :value="place.name">
-								{{ place.name }}
-							</option>
-						</select>
+                      <option value="">Select a country</option>
+                      <option v-for="place in countries" :key="place.id" :value="place.name">
+                        {{ place.name }}
+                      </option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -302,7 +302,7 @@
   .order-item:last-child, .wishlist-item:last-child {
     border-bottom: none;
   }
-  .input-field {
+  .input-field , select {
     width: 100%;
     padding: 6px;
     margin: 6px 0;
