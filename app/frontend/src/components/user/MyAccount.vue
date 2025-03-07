@@ -175,10 +175,10 @@
 
             this.user.phone_number = value;
         },
-        async getUser(){
+        async getUser() {
             try {
                 const response = await apiRequest.getUser();
-                if(response.data != undefined){
+                if (response.data) {
                     this.user = response.data;
                     this.selectedCountry = this.user.country;
                 }
@@ -186,33 +186,39 @@
                 console.log(error);
             }
         },
-      async updateProfile() {
-        try{
-            const formData = new FormData();
-            formData.append('user_id', this.user.id);
-            formData.append('first_name', this.user.first_name ? this.user.first_name : '');
-            formData.append('last_name', this.user.last_name ? this.user.last_name : '');
-            formData.append('email', this.user.email ? this.user.email : '');
-            formData.append('gender', this.user.gender ? this.user.gender : '');
-            formData.append('date_of_birth', this.user.date_of_birth ? this.user.date_of_birth : '');
-            formData.append('phone_number', this.user.phone_number ? this.user.phone_number : '');
-            formData.append('address', this.user.address ? this.user.address : '');
-            formData.append('city', this.user.city ? this.user.city : '');
-            formData.append('state', this.user.state ? this.user.state : '');
-            formData.append('country', this.selectedCountry ? this.selectedCountry : '');
-            formData.append('postal_code', this.user.postal_code ? this.user.postal_code : '');
 
-            const response = await apiRequest.updateUser(formData);
-            if(response.data != undefined && response.data.success == 'true'){
-                this.user = response.data.user;
-                showAlert("success", "Nice!", response.data.message);
-            }else{
-                showAlert("error", "Oops!", response.data.message);
+      prepareUserFormData() {
+          const formData = new FormData();
+          formData.append('user_id', this.user.id);
+          formData.append('first_name', this.user.first_name ?? '');
+          formData.append('last_name', this.user.last_name ?? '');
+          formData.append('email', this.user.email ?? '');
+          formData.append('gender', this.user.gender ?? '');
+          formData.append('date_of_birth', this.user.date_of_birth ?? '');
+          formData.append('phone_number', this.user.phone_number ?? '');
+          formData.append('address', this.user.address ?? '');
+          formData.append('city', this.user.city ?? '');
+          formData.append('state', this.user.state ?? '');
+          formData.append('country', this.selectedCountry ?? '');
+          formData.append('postal_code', this.user.postal_code ?? '');
+
+          return formData;
+      },
+
+      async updateProfile() {
+            try {
+                const response = await apiRequest.updateUser(this.prepareUserFormData());
+                if (response.data?.success === 'true') {
+                    this.user = response.data.user;
+                    showAlert("success", "Nice!", response.data.message);
+                } else {
+                    showAlert("error", "Oops!", response.data.message);
+                }
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-          console.log(error);
-        }
-      }
+        },
+
     }
   };
   </script>
