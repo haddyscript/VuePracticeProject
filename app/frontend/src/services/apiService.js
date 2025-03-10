@@ -81,6 +81,9 @@ const apiServicesToReUse = {
     placeOrder(formData){
         return apiRequest.post('/user/place_order', formData);
     },
+    getMyOrders(formData){
+        return apiRequest.post('/user/get_order', formData);
+    },
 
     //-------------------------------------//
     // This is for admin section api routes//

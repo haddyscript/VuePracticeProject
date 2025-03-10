@@ -7,9 +7,60 @@ use App\Models\OrderBillingDetails;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 use App\Models\Checkout;
+use App\Models\Product;
 
 class OrderBillingDetailsController extends Controller
 {
+    public function myOrders(Request $request) {
+        if (empty($request['user_id'])) {
+            return response()->json(['success' => 'false', 'message' => 'User id is required'], 200);
+        }
+    
+        $orders = OrderBillingDetails::where('user_id', $request['user_id'])->get();
+    
+        if ($orders->isEmpty()) {
+            return response()->json(['success' => 'false', 'message' => 'No orders found'], 200);
+        }
+    
+        $formattedOrders = [];
+    
+        foreach ($orders as $order) {
+            $orderData = $order->toArray();
+    
+            $orderData['product_details'] = json_decode(
+                mb_convert_encoding($order->product_details, 'UTF-8', 'UTF-8'),
+                true
+            );
+    
+            $productIds = collect($orderData['product_details'])->pluck('product_id')->all();
+    
+            $products = Product::whereIn('id', $productIds)->with('productImages')->get()->keyBy('id');
+    
+            foreach ($orderData['product_details'] as &$product) {
+                $productId = $product['product_id'];
+                if (isset($products[$productId])) {
+                    $productData = $products[$productId];
+    
+                    $productImages = [];
+                    if ($productData->productImages) {
+                        foreach ($productData->productImages as $image) {
+                            if (!empty($image->image_data)) {
+                                $productImages[] = base64_encode($image->image_data);
+                            }
+                        }
+                    }
+                    $product['image_data'] = $productImages;
+                }
+            }
+    
+            $formattedOrders[] = $orderData;
+        }
+    
+        return response()->json(['success' => 'true', 'message' => 'Orders', 'orders' => $formattedOrders], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+     
+    
+
     public function addToOrder(Request $request) {
         Log::info('Received request to add order:', $request->all());
         if (empty($request->mode_of_payment)) {

@@ -23,16 +23,66 @@
         </div>
         
         <div class="tab-content">
+          
           <div v-if="activeTab === 'orders'" class="orders-section">
             <h3>My Orders</h3>
-            <div v-for="order in orders" :key="order.id" class="order-item">
-              <div class="order-details">
-                <p><strong>Order #{{ order.id }}</strong></p>
-                <p>Status: <span :class="order.status.toLowerCase()">{{ order.status }}</span></p>
-                <p>Total: <strong>{{ order.total }} PHP</strong></p>
-              </div>
-            </div>
+            <table class="order-table">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Status</th>
+                  <th>Total (PHP)</th>
+                  <th>Payment Reference</th>
+                  <th>Coupon Code</th>
+                  <th>Address</th>
+                  <th>Mode of Payment</th>
+                  <th>Ordered At</th>
+                  <th>Products</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="order in orders" :key="order.id">
+                  <td><strong>{{ order.id }}</strong></td>
+                  <td><span v-if="order.is_paid">Paid</span><span v-else>Unpaid</span></td>
+                  <td><strong>{{ order.order_total }}</strong></td>
+                  <td><strong>{{ order.payment_reference }}</strong></td>
+                  <td><strong>{{ order.coupon_code || 'None' }}</strong></td>
+                  <td>{{ order.address }}, {{ order.state_country }}, {{ order.postal_zip }}</td>
+                  <td>{{ getPaymentMethod(order.mode_of_payment) }}</td>
+                  <td>{{ formatDate(order.created_at) }}</td>
+                  <td>
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>Image</th>
+                          <th>Product Name</th>
+                          <th>Price (PHP)</th>
+                          <th>Quantity</th>
+                          <th>Subtotal (PHP)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="product in order.product_details" :key="product.id">
+                          <td>
+                            <img 
+                              :src="getProductImage(product.image_data[0])" 
+                              class="product-thumbnail" 
+                              alt="Product Image"
+                            />
+                          </td>
+                          <td><strong>{{ product.product_name }}</strong></td>
+                          <td>{{ product.product_price }}</td>
+                          <td>{{ product.quantity }}</td>
+                          <td><strong>{{ product.total_price }}</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+          <br><br>
           
           <div v-if="activeTab === 'wishlist'" class="wishlist-section">
             <h3>Wishlist</h3>
@@ -132,10 +182,7 @@
         isLoading: true,
         activeTab: 'settings',
         user: [],
-        orders: [
-          { id: 1, status: 'Delivered', total: 500 },
-          { id: 2, status: 'Processing', total: 1200 }
-        ],
+        orders: [],
         wishlist: [
           { id: 1, name: 'Product 1', price: 300 },
           { id: 2, name: 'Product 2', price: 450 }
@@ -144,12 +191,28 @@
     },
     mounted() {
       this.getUser();
+      this.getMyOrders();
       this.getCountry();
       setTimeout(() => {
 			this.isLoading = false; 
 		}, 1000);
     },
     methods: {
+      getProductImage(product) {
+        return 'data:image/jpeg;base64,' +product || '/images/default-product.png';
+      },
+      getPaymentMethod(mode) {
+        const methods = {
+          1: "Cash On Delivery",
+          2: "Bank Transfer",
+          3: "Pay Pal",
+          4: "Gcash"
+        };
+        return methods[mode] || "Unknown";
+      },
+      formatDate(date) {
+        return new Date(date).toLocaleString("en-PH", { timeZone: "Asia/Manila" });
+      },
         async getCountry(){
 			try{
 				const response = await apiRequest.getCountry();
@@ -181,6 +244,23 @@
                 if (response.data) {
                     this.user = response.data;
                     this.selectedCountry = this.user.country;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async getMyOrders() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (!user) return;
+
+                const formData = new FormData();
+                formData.append('user_id', user.id);
+
+                const response = await apiRequest.getMyOrders(formData);
+                console.log('Orders : ', response);
+                if (response.data) {
+                    this.orders = response.data.orders;
                 }
             } catch (error) {
                 console.log(error);
@@ -359,6 +439,31 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.order-table, .product-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.order-table th, .order-table td,
+.product-table th, .product-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  background-color: white;
+}
+
+.order-table th, .product-table th {
+  background-color: #f4f4f4;
+}
+
+.product-thumbnail {
+  max-width: 100px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
   </style>
   

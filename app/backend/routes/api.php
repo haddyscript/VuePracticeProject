@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/checkout_items', [CheckoutController::class, 'getCheckoutDetails']);
 
     Route::post('/user/place_order', [OrderBillingDetailsController::class, 'addToOrder']);
+    Route::post('/user/get_order', [OrderBillingDetailsController::class, 'myOrders']);
 
     Route::post('/admin/create_buiness_detail', [BusinessDetailController::class, 'createBusinessGeneralDetail']);
     Route::post('/admin/update_detail', [AdminController::class, 'changeAdminDetail']);
