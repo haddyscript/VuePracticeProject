@@ -33,5 +33,6 @@ class OrderBillingDetails extends Model
         'is_paid',
         'user_id',
         'mode_of_payment',
+        'payment_reference'
     ];
 }

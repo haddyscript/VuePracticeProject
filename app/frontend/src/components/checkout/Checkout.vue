@@ -221,20 +221,27 @@
 		    </div>
 		  </div>
 				<!-- GCash Modal -->
-				<div v-if="showGcashModal" class="modal-overlay">
-					<div class="modal-content">
-						<h3>Pay with GCash</h3>
-						<p>Amount to Pay: <strong>P{{ order_total_amount }}</strong></p>
-						
-						<label for="gcashNumber">GCash Number:</label>
-						<input type="text" id="gcashNumber" v-model="gcashNumber" class="form-control" placeholder="Enter your GCash number" />
 
-						<div class="modal-actions">
-							<button class="btn btn-success" @click="confirmGcashPayment">Confirm Payment</button>
-							<button class="btn btn-danger" @click="closeGcashModal">Cancel</button>
-						</div>
-					</div>
+		<div v-if="showGcashModal" class="gcash-modal-overlay">
+			<div class="gcash-modal">
+				<div class="gcash-modal-header">
+				<img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/GCash_logo.svg" alt="GCash Logo" class="gcash-logo" />
 				</div>
+				
+				<div class="gcash-modal-body">
+				<p class="gcash-amount">Amount to Pay: <strong>P{{ order_total_amount }}</strong></p>
+
+				<label for="gcashNumber" class="gcash-label">GCash Number</label>
+				<input type="text" id="gcashNumber" v-model="gcashNumber" class="gcash-input" placeholder="Enter your GCash number" />
+
+				<div class="gcash-modal-actions">
+					<button class="gcash-button pay" @click="confirmGcashPayment">OK</button>
+					<button class="gcash-button cancel" @click="closeGcashModal">Cancel</button>
+				</div>
+				</div>
+			</div>
+		</div>
+
 </template>
 
 <script>
@@ -336,6 +343,8 @@ export default {
 			await this.fetchCheckoutDetails(formData, true);
 		},
 		prepareParams() {
+			const user = JSON.parse(localStorage.getItem('user'));
+
 			const formData = new FormData();
 
 			formData.append('country', this.selectedCountry);
@@ -357,26 +366,28 @@ export default {
 			formData.append('discount_total', this.discount);
 			formData.append('mode_of_payment', this.mode_of_payment);
 			formData.append('is_paid', 0);
+			formData.append('gcash_number', this.gcashNumber);
+			formData.append('email', user.email);
 
 			return formData;
 		}, 
 		async placeOrder() {
-			if (this.mode_of_payment == 4) {
+			if (this.mode_of_payment == 4 && this.gcashNumber == '') {
 
 				this.showGcashModal = true;
 				return;
+			}else{
+				this.showGcashModal = false;
+				this.submitOrder();
 			}
-
-			this.submitOrder();
 		},
 		async confirmGcashPayment() {
-			if (!this.gcashNumber) {
-			alert("Please enter your GCash number.");
-			return;
+			if (!this.gcashNumber || this.gcashNumber.trim() === '') {
+				alert("Please enter your GCash number.");
+				return;
 			}
 
 			this.showGcashModal = false; 
-			this.submitOrder();
 		},
 		closeGcashModal() {
 			this.showGcashModal = false;
@@ -384,9 +395,12 @@ export default {
 		async submitOrder() {
 			try {
 			const response = await apiRequest.placeOrder(this.prepareParams());
-
+				console.log(response);
 			if (response.data.success == "true") {
 				showAlert("success", "Success", response.data.message);
+				if(response.data.redirect_url != undefined){
+					window.open(response.data.redirect_url, '_blank');
+				}
 				this.$router.push("/thankyou");
 			} else {
 				showAlert("error", "Oops!", response.data.message);
@@ -430,12 +444,12 @@ export default {
 }
 
 .form-check-input:checked {
-        background-color: #3b5d50;
-        border-color: #3b5d50;
-    }
+	background-color: #3b5d50;
+	border-color: #3b5d50;
+}
 
-
-.modal-overlay {
+/* Modal Overlay */
+.gcash-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -445,25 +459,92 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1050;
 }
 
-.modal-content {
-  background: white;
+/* Modal Container */
+.gcash-modal {
+  width: 90%;
+  max-width: 360px;
+  background: #ffffff;
+  border-radius: 15px;
   padding: 20px;
-  border-radius: 5px;
   text-align: center;
-  width: 40%;
-}
-.gcashNumber{
-	text-align: center;
-	width: 20px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  position: relative;
 }
 
-.modal-actions {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-around;
+/* GCash Logo */
+.gcash-logo {
+  width: 120px;
+  margin-bottom: 15px;
 }
+
+/* Payment Amount */
+.gcash-amount {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #007aff;
+}
+
+/* Input Label */
+.gcash-label {
+  display: block;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Input Field */
+.gcash-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f9f9f9;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.gcash-input:focus {
+  border-color: #007aff;
+  background: #fff;
+}
+
+/* Buttons */
+.gcash-modal-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.gcash-button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.gcash-button.pay {
+  background: #007aff;
+  color: white;
+}
+
+.gcash-button.cancel {
+  background: #e74c3c;
+  color: white;
+}
+
+.gcash-button:hover {
+  opacity: 0.85;
+}
+
 
 </style>

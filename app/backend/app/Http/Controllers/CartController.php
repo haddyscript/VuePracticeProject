@@ -19,7 +19,7 @@ class CartController extends Controller
             return $checkValidity;
         }
         $user_id = $request->user()->id;
-        $cart = Cart::where('user_id', $user_id)->where('product_id', $request->product_id)->first();
+        $cart = Cart::where('user_id', $user_id)->where('product_id', $request->product_id)->where('is_checkout', 0)->first();
         $timeInAsia = Carbon::now('Asia/Manila');
 
         if($cart == null){

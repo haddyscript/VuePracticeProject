@@ -9,6 +9,7 @@ use App\Models\PaymentEwallet;
 use Xendit\Configuration;
 use Xendit\Invoice\Invoice;
 use Xendit\Invoice\InvoiceApi;
+use App\Models\OrderBillingDetails;
 
 class XenditPaymentController extends Controller
 {
@@ -68,27 +69,20 @@ class XenditPaymentController extends Controller
 
     public function createEwalletPayment(Request $request)
     {
+        Log::info('Received e-wallet payment request:', $request->all());
         $apiKey = env('XENDIT_SECRET_KEY');
         $url = env('XENDIT_E_WALLET_CHARGE');
 
         $externalId = 'ewallet-' . uniqid();
-        $allowedChannels = ['GCASH', 'SHOPEEPAY', 'DANA', 'OVO', 'LINKAJA', 'GRABPAY'];
-        $ewalletType = strtoupper($request->ewallet_type);
-
-        if (!in_array($ewalletType, $allowedChannels)) {
-            return response()->json([
-                'message' => 'Invalid e-wallet type. Allowed values: GCASH, SHOPEEPAY, DANA, OVO, LINKAJA, GRABPAY.'
-            ], 400);
-        }
-
+        
         $channelMapping = [
             'GCASH' => 'PH_GCASH',
             'SHOPEEPAY' => 'PH_SHOPEEPAY',
             'GRABPAY' => 'PH_GRABPAY',
         ];
-        
+    
         $ewalletType = strtoupper($request->ewallet_type);
-        
+    
         if (!isset($channelMapping[$ewalletType])) {
             return response()->json([
                 'message' => 'Invalid e-wallet type. Allowed values: GCASH, SHOPEEPAY, GRABPAY.'
@@ -101,15 +95,16 @@ class XenditPaymentController extends Controller
         $data = [
             "reference_id" => $externalId, 
             "currency" => "PHP", 
-            "amount" => $request->amount,
+            "amount" => (float) str_replace(',', '', $request->amount),
             "checkout_method" => "ONE_TIME_PAYMENT", // REQUIRED: Use "ONE_TIME_PAYMENT" or "TOKENIZED_PAYMENT"
             "channel_code" => $channelCode,
             "channel_properties" => [
-                "mobile_number" => $this->formatPhoneNumber($request->phone),
+                "mobile_number" => $this->formatPhoneNumber($request->number),
                 "success_redirect_url" => url('/payment-success'), // Redirect user after payment
                 "failure_redirect_url" => url('/payment-failed')
             ]
         ];
+        Log::info('Xendit E-Wallet Request Data :', ['request' => $data]);
 
         $headers = [
             "Content-Type: application/json",
@@ -132,22 +127,25 @@ class XenditPaymentController extends Controller
         Log::info('Xendit E-Wallet Response:', ['response' => $responseData]);
 
         if (isset($responseData['status']) && in_array($responseData['status'], ['PENDING', 'SUCCEEDED'])) {
-            PaymentEwallet::create([
+            
+            $savePayment = PaymentEwallet::create([
                 'external_id' => $responseData['id'],
                 'reference_id' => $responseData['reference_id'],
                 'email' => $request->email,
                 'ewallet_type' => $request->ewallet_type,
-                'amount' => $request->amount,
+                'amount' => (float) str_replace(',', '', $request->amount),
                 'status' => $responseData['status'],
                 'redirect_url' => $responseData['actions']['mobile_web_checkout_url'] ?? null,
             ]);
-        
-            return response()->json([
-                'message' => 'E-Wallet payment created successfully',
-                'checkout_url' => $responseData['actions']['mobile_web_checkout_url'] ?? null,
-                'status' => $responseData['status'],
-                'reference_id' => $responseData['reference_id']
-            ]);
+            if($savePayment){
+                return response()->json([
+                    'message' => 'E-wallet payment created successfully',
+                    'status' => $responseData['status'],
+                    'external_id' => $responseData['id'],
+                    'reference_id' => $responseData['reference_id'],
+                    'redirect_url' => $responseData['actions']['mobile_web_checkout_url'] ?? null,
+                ], 200);
+            }
         }        
 
         return response()->json([
@@ -175,15 +173,38 @@ class XenditPaymentController extends Controller
 
     public function handleWebhook(Request $request)
     {
+        Log::info('Received Xendit Webhook:', $request->all());
+
         $data = $request->all();
 
-        if (isset($data['status']) && $data['status'] === 'PAID') {
-            // Update payment status in database
-            Payment::where('external_id', $data['external_id'])
-                ->update(['status' => 'PAID']);
+        if (!isset($data['data']['id']) || !isset($data['data']['status'])) {
+            Log::warning('Invalid webhook payload', $data);
+            return response()->json(['message' => 'Invalid webhook payload'], 400);
         }
 
-        return response()->json(['message' => 'Webhook received']);
+        $paymentId = $data['data']['id'];
+        $status = $data['data']['status'];
+
+        $payment = PaymentEwallet::where('external_id', $paymentId)->first();
+        Log::info('payment', ['payment' => $payment]);
+
+        if (!$payment) {
+            Log::warning('Payment not found for webhook', ['payment_id' => $paymentId]);
+            return response()->json(['message' => 'Payment not found'], 404);
+        }
+
+        $payment->status = $status;
+        if ($payment->save()) {
+            $find_order = OrderBillingDetails::where('payment_reference', $payment->reference_id)->first();
+            Log::info('find_order', ['order' => $find_order]);
+
+            if ($find_order) {
+                $find_order->is_paid = 1;
+                $find_order->save();
+            }
+        }
+
+        return response()->json(['message' => 'Payment status updated successfully'], 200);
     }
 
     public function testXenditAPI()
