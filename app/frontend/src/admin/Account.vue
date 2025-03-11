@@ -340,7 +340,13 @@ export default {
     // Save the changes and send to the backend
     async saveChanges() {
       try {
-        const response = await apiRequest.updateAdminOnebyOneInfo(this.modalField , this.editValue);
+		const adminData = JSON.parse(localStorage.getItem('admin'));
+		if (!adminData) return;
+		const requestData = {
+            admin_id: adminData.id,
+            [this.modalField]: this.editValue 
+        };
+        const response = await apiRequest.updateAdminOnebyOneInfo(requestData);
 		const updatedAdmin = response.data.admin;
 		localStorage.setItem('admin', JSON.stringify(updatedAdmin));
 		this.adminDetail = updatedAdmin;
@@ -361,6 +367,7 @@ export default {
 	async getData () {
 		try{
 			const adminData = JSON.parse(localStorage.getItem('admin'));
+			console.log('adminData :',  adminData);
 			if (!adminData) return;
 			const formData = new FormData();
 			formData.append("admin_id", adminData.id); 

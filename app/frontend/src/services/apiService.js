@@ -98,8 +98,8 @@ const apiServicesToReUse = {
     adminLogin(formData){
         return apiRequest.post('/admin/login', formData);
     },
-    adminLogout(){
-        return apiRequest.post('/admin/logout');
+    adminLogout(formData){
+        return apiRequest.post('/admin/logout', formData);
     },
     getAdminInfo(formData){
         return apiRequest.post('/admin', formData);
@@ -107,8 +107,7 @@ const apiServicesToReUse = {
     updateAdminProfilePicture(formData){
         return apiRequest.post('/admin/update_profile_picture', formData);
     },
-    updateAdminOnebyOneInfo(modalField , editValue){
-        const payload = { [modalField]: editValue };
+    updateAdminOnebyOneInfo(payload){
         return apiRequest.post('/admin/update_detail', payload);
     },
     createBusinessDetails(formData){    

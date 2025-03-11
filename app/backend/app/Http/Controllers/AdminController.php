@@ -139,60 +139,80 @@ class AdminController extends Controller
         ), 401);
     }
 
-    public function changeAdminDetail(Request $request){
-        
-        $change = $request->full_name ? 'full_name' : 
-                ($request->email ? 'email' : 
-                ($request->password ? 'password' : 
-                ($request->username ? 'username' : 
-                ($request->language ? 'language' : 
-                ($request->two_factor_secret ? 'two_factor_secret' : 
-                ($request->email_subscription ? 'email_subscription' : 
-                ($request->two_factor_enabled ? 'two_factor_enabled' : 
-                ($request->location ? 'location' : '')))))))); 
+    public function changeAdminDetail(Request $request)
+    {
+        // Define updatable fields
+        $updatableFields = [
+            'full_name', 'email', 'password', 'username', 
+            'language', 'two_factor_secret', 'email_subscription', 
+            'two_factor_enabled', 'location'
+        ];
 
-        $admin = $request->user();
+        // Find the first present field in the request
+        $change = collect($updatableFields)->first(fn($field) => $request->has($field));
 
-        if ($change) {
-
-            // Validate email if it's being changed
-            if ($request->has('email') && $request->email != $admin->email) {
-
-                if(Admin::where('email', $request->email)->first()){
-                    return response()->json([
-                        'message' => 'Email is already taken. Please use another email.',
-                        'success' => 'false'
-                    ], 200);
-                }
-            }
-            if ($request->has('username') && $request->username != $admin->username) {
-
-                if(Admin::where('username', $request->username)->first()){
-                    return response()->json([
-                        'message' => 'Username is already taken. Please use another username.',
-                        'success' => 'false'
-                    ], 200);
-                }
-            }
-
-            if ($request->has($change)) {
-                $admin->$change = $request->$change;
-            }
-    
-            $admin->save();
-    
+        // Ensure admin_id is provided and valid
+        if (!$request->has('admin_id')) {
             return response()->json([
-                'success' => 'true',
-                'message' => 'Admin details updated successfully!',
-                'admin' => $admin
-            ]);
-        } else {
-            return response()->json([
-                'message' => 'No valid data to update.'
-            ], 400);
+                'message' => 'Admin ID is required.',
+                'success' => 'false'
+            ], 200);
         }
 
+        $admin = Admin::find($request->admin_id);
+
+        if (!$admin) {
+            return response()->json([
+                'message' => 'Admin not found.',
+                'success' => 'false'
+            ], 200);
+        }
+
+        // Check if there is a valid field to update
+        if (!$change) {
+            return response()->json([
+                'message' => 'No valid data to update.',
+                'success' => 'false'
+            ], 200);
+        }
+
+        // Validate email uniqueness if it's being changed
+        if ($change === 'email' && $request->email !== $admin->email) {
+            if (Admin::where('email', $request->email)->exists()) {
+                return response()->json([
+                    'message' => 'Email is already taken. Please use another email.',
+                    'success' => 'false'
+                ], 200);
+            }
+        }
+
+        // Validate username uniqueness if it's being changed
+        if ($change === 'username' && $request->username !== $admin->username) {
+            if (Admin::where('username', $request->username)->exists()) {
+                return response()->json([
+                    'message' => 'Username is already taken. Please use another username.',
+                    'success' => 'false'
+                ], 200);
+            }
+        }
+
+        // Handle password hashing if updated
+        if ($change === 'password') {
+            $admin->password = bcrypt($request->password);
+        } else {
+            $admin->$change = $request->$change;
+        }
+
+        // Save updated admin details
+        $admin->save();
+        $admin->makeHidden('profile_picture');
+        return response()->json([
+            'success' => 'true',
+            'message' => 'Admin details updated successfully!',
+            'admin' => $admin
+        ], 200);
     }
+
 
     public function getAdminInfo(Request $request){
 
@@ -221,7 +241,7 @@ class AdminController extends Controller
         }
 
         if (!$request->hasFile('profile_picture')) {
-            return response()->json(['success' => 'false', 'message' => 'No file uploaded'], 400);
+            return response()->json(['success' => 'false', 'message' => 'No file uploaded'], 200);
         }
 
         $file = $request->file('profile_picture');
