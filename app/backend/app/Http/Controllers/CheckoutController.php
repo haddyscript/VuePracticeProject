@@ -81,6 +81,10 @@ class CheckoutController extends Controller
             }else{
                 return $this->generalResponse(true, 'Checkout details', $carts, $totalAmount, $discountAmount, $finalAmount, $couponCode);
             }
+        }else{
+            return response()->json([
+                'error' => true
+            ],200);
         }
     }
 

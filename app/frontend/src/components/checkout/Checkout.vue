@@ -308,6 +308,10 @@ export default {
 					showAlert("error", "Oops!", response.data.message);
 					this.updateCheckoutState(response.data);
 				}
+
+				if(response.data.error == true){
+					this.$router.push('/shop');
+				}
 			} catch (error) {
 				console.log(error);
 			}
