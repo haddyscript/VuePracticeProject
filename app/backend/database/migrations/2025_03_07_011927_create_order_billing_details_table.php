@@ -29,7 +29,7 @@ class CreateOrderBillingDetailsTable extends Migration
             $table->decimal('discount_total', 10, 2);
             $table->decimal('order_total', 10, 2);
             $table->integer('mode_of_payment')->comment('1: COD, 2: Bank, 3: Paypal, 4: Gcash');
-            $table->integer('is_paid')->comment('0: not, 1: yes');
+            $table->integer('is_paid')->comment('0:pending, 1:paid, 2: cancelled');
             $table->timestamps();
         });
     }

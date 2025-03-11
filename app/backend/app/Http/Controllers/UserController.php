@@ -123,6 +123,7 @@ class UserController extends Controller
 
         if($user && Hash::check($request->password, $user->password)){
 
+            $user->makeHidden('profile_picture');
             $token = $user->createToken('auth_token')->plainTextToken;
             $checkExistingCheckout = $this->checkExistingCheckout($user->id);
             $result = response()->json(

@@ -285,6 +285,7 @@
         async getUser() {
             try {
                 const response = await apiRequest.getUser();
+                console.log('User : ', response);
                 if (response.data) {
                     this.user = response.data;
                     this.selectedCountry = this.user.country;

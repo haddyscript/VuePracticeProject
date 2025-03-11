@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\OrderBillingDetails;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use App\Models\Checkout;
 use App\Models\Product;
@@ -99,6 +100,23 @@ class OrderBillingDetailsController extends Controller
     
         if ($order && isset($validatedData['checkout_id'])) {
             Checkout::where('id', $validatedData['checkout_id'])->update(['is_place_order' => 1]);
+        }
+
+        if (!empty($request->product_details)) {
+            $productDetails = json_decode($request->product_details, true);
+            
+            foreach ($productDetails as $product) {
+                $productModel = Product::where('id', $product['product_id'])->first();
+                
+                if ($productModel && $productModel->stock_quantity >= $product['quantity']) {
+                    $productModel->decrement('stock_quantity', $product['quantity']);
+                } else {
+                    return response()->json([
+                        'success' => 'false',
+                        'message' => "Not enough stock for product: {$product['product_name']}"
+                    ], 200);
+                }
+            }
         }
         
         return response()->json([

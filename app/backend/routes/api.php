@@ -48,8 +48,19 @@ Route::middleware('auth:sanctum')->group(function () {
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
-            'profile_picture' => $user->profile_picture ? base64_encode($user->profile_picture) : null
-        ]);
+            'gender' => $user->gender,
+            'password' => $user->password,
+            'date_of_birth' => $user->date_of_birth,
+            'phone_number' => $user->phone_number,
+            'address' => $user->address,
+            'city' => $user->city,
+            'state' => $user->state,
+            'country' => $user->country,
+            'postal_code' => $user->postal_code,
+            'profile_picture' => $user->profile_picture ? base64_encode($user->profile_picture) : null,
+            'is_active' => $user->is_active,
+            'is_verified' => $user->is_verified
+        ]);        
     });
     Route::get('/admin', function (Request $request){
         return $request->user();
