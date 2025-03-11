@@ -39,12 +39,23 @@ Route::get('/admin/get_product/{id}', [ProductController::class, 'getProductById
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request){
-        return $request->user();
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['success' => 'false', 'message' => 'User not found'], 404);
+        }
+        return response()->json([
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'profile_picture' => $user->profile_picture ? base64_encode($user->profile_picture) : null
+        ]);
     });
     Route::get('/admin', function (Request $request){
         return $request->user();
     });
     Route::post('/user/update_user', [UserController::class, 'updateUser']);
+    Route::post('/user/update_profile_picture', [UserController::class, 'uploadProfilePicture']);
     Route::post('/user/add_to_cart', [CartController::class, 'addToCart']);
     Route::post('/user/get_products_in_cart', [CartController::class, 'getProductInCart']);
     Route::post('/user/delete_product_in_cart', [CartController::class, 'removeFromCart']);

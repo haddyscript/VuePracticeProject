@@ -48,6 +48,9 @@ const apiServicesToReUse = {
     getUser(){
         return apiRequest.get('/user');
     },
+    updateProfilePicture(formData){
+        return apiRequest.post('/user/update_profile_picture', formData);
+    },
     updateUser(formData){
         return apiRequest.post('/user/update_user', formData);
     },

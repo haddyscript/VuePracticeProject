@@ -7,10 +7,12 @@
     <div v-else class="customer-account">
       <div class="account-header">
         <div class="profile-section">
-          <img :src="user.profileImage" alt="Profile Picture" class="profile-pic" />
+          <img :src=" user.profile_picture ? getProductImage(user.profile_picture) : previewImage"  alt="Profile Picture" class="profile-pic" />
           <div class="user-info">
             <h2>{{ user.first_name }} {{ user.last_name }}</h2>
             <p>{{ user.email }}</p>
+            <input type="file" @change="onFileChange" accept="image/*" class="file-input" />
+            <button @click="uploadProfilePicture" :disabled="!selectedFile">Upload</button>
           </div>
         </div>
       </div>
@@ -186,7 +188,10 @@
         wishlist: [
           { id: 1, name: 'Product 1', price: 300 },
           { id: 2, name: 'Product 2', price: 450 }
-        ]
+        ],
+        profileImage: "https://via.placeholder.com/150",
+        selectedFile: null, 
+        previewImage: null, 
       };
     },
     mounted() {
@@ -198,6 +203,45 @@
 		}, 1000);
     },
     methods: {
+      onFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+          this.selectedFile = file;
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.previewImage = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      },
+      async uploadProfilePicture() {
+        if (!this.selectedFile) {
+          alert("Please select a file first.");
+          return;
+        }
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) return;
+        const formData = new FormData();
+        formData.append("user_id", user.id); 
+        formData.append("profile_picture", this.selectedFile);
+        const file_input =  document.getElementsByClassName("file-input");
+        try {
+          const response = await apiRequest.updateProfilePicture(formData);
+
+          if (response.data.success === "true") {
+              showAlert("success", "Success!", response.data.message);
+              this.previewImage = null;
+              file_input[0].value = "";
+              this.getUser();
+          } else {
+             showAlert("error", "Oops!", response.data.message);
+          }
+        } catch (error) {
+          console.error(error);
+          alert("An error occurred while uploading.");
+        }
+      },
       getProductImage(product) {
         return 'data:image/jpeg;base64,' +product || '/images/default-product.png';
       },
@@ -333,22 +377,42 @@
     font-family: 'Arial', sans-serif;
   }
   .account-header {
-    display: flex;
-    align-items: center;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #eee;
-  }
-  .profile-section {
-    display: flex;
-    align-items: center;
-  }
-  .profile-pic {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin-right: 20px;
-    border: 3px solid #ddd;
-  }
+  text-align: center;
+  padding: 20px;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-pic {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ccc;
+}
+
+.file-input {
+  margin-top: 10px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
   .menu {
     display: flex;
     justify-content: space-around;
@@ -372,6 +436,9 @@
     background: #f8f8f8;
     padding: 20px;
     border-radius: 8px;
+  }
+  .orders-section{
+    width: 130vh;
   }
   .orders-section, .wishlist-section, .settings-section {
     padding: 15px;

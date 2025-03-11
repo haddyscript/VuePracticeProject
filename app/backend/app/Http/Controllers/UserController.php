@@ -230,5 +230,29 @@ class UserController extends Controller
         return null;
     }
 
+    public function uploadProfilePicture(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json(['success' => 'false', 'message' => 'User not found'], 404);
+        }
+
+        if (!$request->hasFile('profile_picture')) {
+            return response()->json(['success' => 'false', 'message' => 'No file uploaded'], 400);
+        }
+
+        $file = $request->file('profile_picture');
+        $profilePicture = file_get_contents($file->getRealPath()); 
+
+        $user->update(['profile_picture' => $profilePicture]);
+
+        return response()->json([
+            'success' => 'true',
+            'message' => 'Profile picture uploaded successfully',
+        ], 200);
+    }
+
+
 
 }
