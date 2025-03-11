@@ -106,7 +106,7 @@ class AdminController extends Controller
         }
         if($admin && password_verify($request->password, $admin->password)){
             $token = $admin->createToken('admin_auth_token')->plainTextToken;
-
+            $admin->makeHidden('profile_picture');
             return response()->json(([
                 'success' => 'true',
                 'status' => 'success',
@@ -204,11 +204,34 @@ class AdminController extends Controller
         }
 
         $admin = Admin::where('id', $request->admin_id)->first();
-
+        $admin->profile_picture = $admin->profile_picture ? base64_encode($admin->profile_picture) : null;
         return response()->json([
             'success' => 'true',
             'message' => 'Admin info fetched successfully!',
             'admin' => $admin
+        ], 200);
+    }
+
+    public function uploadProfilePicture(Request $request)
+    {
+        $admin = Admin::find($request->admin_id);
+
+        if (!$admin) {
+            return response()->json(['success' => 'false', 'message' => 'User not found'], 404);
+        }
+
+        if (!$request->hasFile('profile_picture')) {
+            return response()->json(['success' => 'false', 'message' => 'No file uploaded'], 400);
+        }
+
+        $file = $request->file('profile_picture');
+        $profilePicture = file_get_contents($file->getRealPath()); 
+
+        $admin->update(['profile_picture' => $profilePicture]);
+
+        return response()->json([
+            'success' => 'true',
+            'message' => 'Profile picture uploaded successfully',
         ], 200);
     }
 

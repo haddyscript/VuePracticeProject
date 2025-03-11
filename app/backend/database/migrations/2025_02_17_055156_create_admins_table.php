@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('password');
             $table->string('full_name');
             $table->string('phone_number')->nullable();
-            $table->string('profile_picture')->nullable();
+            $table->longBlob('profile_picture')->nullable();
             $table->string('role')->default('admin');
             $table->boolean('status')->default(true);
             $table->timestamp('last_login')->nullable();

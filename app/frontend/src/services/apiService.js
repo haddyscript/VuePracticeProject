@@ -104,6 +104,9 @@ const apiServicesToReUse = {
     getAdminInfo(formData){
         return apiRequest.post('/admin', formData);
     },
+    updateAdminProfilePicture(formData){
+        return apiRequest.post('/admin/update_profile_picture', formData);
+    },
     updateAdminOnebyOneInfo(modalField , editValue){
         const payload = { [modalField]: editValue };
         return apiRequest.post('/admin/update_detail', payload);

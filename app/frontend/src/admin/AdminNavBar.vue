@@ -49,7 +49,7 @@
 										        </div>
 									        </div><!--//col--> 
 								        </div><!--//row-->
-								        <a class="link-mask" href="notifications.html"></a>
+								        <router-link class="link-mask" to="/admin/notification"></router-link>
 							       </div><!--//item-->
 							       <div class="item p-3">
 								        <div class="row gx-2 justify-content-between align-items-center">
@@ -68,7 +68,7 @@
 										        </div>
 									        </div><!--//col-->
 								        </div><!--//row-->
-								        <a class="link-mask" href="notifications.html"></a>
+								        <router-link class="link-mask" to="/admin/notification"></router-link>
 							       </div><!--//item-->
 							       <div class="item p-3">
 								        <div class="row gx-2 justify-content-between align-items-center">
@@ -86,7 +86,7 @@
 										        </div>
 									        </div><!--//col-->
 								        </div><!--//row-->
-								        <a class="link-mask" href="notifications.html"></a>
+								        <router-link class="link-mask" to="/admin/notification"></router-link>
 							       </div><!--//item-->
 							       <div class="item p-3">
 								        <div class="row gx-2 justify-content-between align-items-center">
@@ -100,12 +100,12 @@
 										        </div>
 									        </div><!--//col--> 
 								        </div><!--//row-->
-								        <a class="link-mask" href="notifications.html"></a>
+								        <router-link class="link-mask" to="/admin/notification"></router-link>
 							       </div><!--//item-->
 						        </div><!--//dropdown-menu-content-->
 						        
 						        <div class="dropdown-menu-footer p-2 text-center">
-							        <a href="notifications.html">View all</a>
+							        <router-link to="/admin/notification">View all</router-link>
 						        </div>
 															
 							</div><!--//dropdown-menu-->					        

@@ -25,16 +25,20 @@
 						    </div><!--//app-card-header-->
 						    <div class="app-card-body px-4 w-100">
 							    <div class="item border-bottom py-3">
-								    <div class="row justify-content-between align-items-center">
-									    <div class="col-auto">
-										    <div class="item-label mb-2"><strong>Photo</strong></div>
-										    <div class="item-data"><img class="profile-image" src="/src/assets/images/user.png" alt=""></div>
-									    </div><!--//col-->
-									    <div class="col text-end">
-										    <a class="btn-sm app-btn-secondary" href="#">Change</a>
-									    </div><!--//col-->
-								    </div><!--//row-->
-							    </div><!--//item-->
+									<div class="row justify-content-between align-items-center">
+									<div class="col-auto">
+										<div class="item-label mb-2"><strong>Photo</strong></div>
+										<div class="item-data">
+										<img v-if="adminDetail" class="profile-image" :src="adminDetail.profile_picture == null || adminDetail.profile_picture == '' ? profileImage : getProductImage(adminDetail.profile_picture)" alt="Profile Picture" />
+										</div>
+									</div>
+									<div class="col text-end">
+										<input type="file" ref="fileInput" class="file-input d-none" @change="onFileChange" accept="image/*" />
+										<button class="btn-sm app-btn-secondary" @click="triggerFileInput">Change</button>
+										<button class="btn-sm app-btn-primary" @click="uploadProfilePicture" v-if="selectedFile">Upload</button>
+									</div>
+									</div>
+								</div>
 							    <div class="item border-bottom py-3">
 								    <div class="row justify-content-between align-items-center">
 									    <div class="col-auto">
@@ -311,6 +315,9 @@ export default {
 		isModalOpen: false,
 		editValue: '',
 		modalField: '',
+		profileImage: "",
+        selectedFile: null, 
+        previewImage: null, 
 	};
   },
    mounted() {
@@ -366,12 +373,70 @@ export default {
 		}catch(error){
 			console.log('Catch error ' , error);
 		}
-	}
+	},
+	triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedFile = file;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.previewImage = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    async uploadProfilePicture() {
+      if (!this.selectedFile) {
+        alert("Please select a file first.");
+        return;
+      }
+
+      const admin = JSON.parse(localStorage.getItem("admin"));
+      if (!admin) {
+        alert("Admin data not found.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("admin_id", admin.id);
+      formData.append("profile_picture", this.selectedFile);
+
+      try {
+        const response = await apiRequest.updateAdminProfilePicture(formData);
+
+        if (response.data.success === "true") {
+          showAlert("success", "Success!", response.data.message);
+          this.previewImage = null;
+          this.selectedFile = null;
+          this.$refs.fileInput.value = "";
+          this.getData(); 
+        } else {
+          showAlert("error", "Oops!", response.data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred while uploading.");
+      }
+    },
+    getProductImage(product) {
+      return product ? `data:image/jpeg;base64,${product}` : "/images/default-product.png";
+    },
   }
 };
 </script>
 
 <style scoped>
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 /* Modal Overlay */
 .modal-overlay {
   position: fixed;
