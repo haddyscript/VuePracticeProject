@@ -45,7 +45,21 @@
               <tbody>
                 <tr v-for="order in orders">
                   <td><strong>{{ order.id }}</strong></td>
-                  <td><span v-if="order.is_paid">Paid</span><span v-else>Unpaid</span></td>
+                  <td>
+                    <div class="dropdown">
+                      <button
+                        class="status-btn"
+                        :class="statusClass(order.is_paid)"
+                        :disabled="order.is_paid == 1"
+                      >
+                        {{ statusText(order.is_paid) }}
+                      </button>
+                      <div v-if="order.is_paid !== 1" class="dropdown-content">
+                        <button @click="updateStatus(1)" class="paid">Paid</button>
+                        <button @click="updateStatus(2)" class="cancel">Cancel</button>
+                      </div>
+                    </div>
+                  </td>
                   <td><strong>{{ order.order_total }}</strong></td>
                   <td><strong>{{ order.payment_reference }}</strong></td>
                   <td><strong>{{ order.coupon_code !== 'null' ? order.coupon_code : 'N/A' }}</strong></td>
@@ -203,6 +217,25 @@
 		}, 1000);
     },
     methods: {
+      statusText(status) {
+          switch (status) {
+            case 0:
+              return "Pending";
+            case 1:
+              return "Paid";
+            case 2:
+              return "Cancelled";
+            default:
+              return "Unknown";
+          }
+      },
+      statusClass(status) {
+        return {
+          pending: status === 0,
+          paid: status === 1,
+          cancel: status === 2,
+        };
+      },
       onFileChange(event) {
         const file = event.target.files[0];
         if (file) {
@@ -532,6 +565,63 @@ button:disabled {
   height: auto;
   display: block;
   margin: 0 auto;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.status-btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.status-btn.pending {
+  background-color: yellow;
+  color: black;
+}
+
+.status-btn.paid {
+  background-color: green;
+  color: white;
+  cursor: not-allowed;
+}
+
+.status-bt.cancel {
+  background-color: red !important;
+  color: white;
+}
+.dropdown-content.cancel{
+  background-color: red !important;
+  color: white;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content button {
+  display: block;
+  width: 100%;
+  padding: 5px;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdown-content button:hover {
+  background-color: lightgray;
 }
   </style>
   

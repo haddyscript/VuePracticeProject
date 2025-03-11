@@ -350,13 +350,18 @@ export default {
       } catch (error) {
         console.error('Error updating details:', error);
       }
-    }
-	,
+    },
 	async getData () {
 		try{
-			const response = await apiRequest.getAdminInfo();
+			const adminData = JSON.parse(localStorage.getItem('admin'));
+			if (!adminData) return;
+			const formData = new FormData();
+			formData.append("admin_id", adminData.id); 
+
+			const response = await apiRequest.getAdminInfo(formData);
+			console.log(response);
 			if(response != null || response != 'undefined'){
-				this.adminDetail = response.data;
+				this.adminDetail = response.data.admin;
 			}
 		}catch(error){
 			console.log('Catch error ' , error);

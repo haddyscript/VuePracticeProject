@@ -194,4 +194,22 @@ class AdminController extends Controller
 
     }
 
+    public function getAdminInfo(Request $request){
+
+        if(empty($request->admin_id)){
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Can not get admin info, please try again.',
+            ], 200);
+        }
+
+        $admin = Admin::where('id', $request->admin_id)->first();
+
+        return response()->json([
+            'success' => 'true',
+            'message' => 'Admin info fetched successfully!',
+            'admin' => $admin
+        ], 200);
+    }
+
 }

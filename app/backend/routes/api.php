@@ -62,9 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'is_verified' => $user->is_verified
         ]);        
     });
-    Route::get('/admin', function (Request $request){
-        return $request->user();
-    });
+    Route::post('/admin', [AdminController::class, 'getAdminInfo']);
     Route::post('/user/update_user', [UserController::class, 'updateUser']);
     Route::post('/user/update_profile_picture', [UserController::class, 'uploadProfilePicture']);
     Route::post('/user/add_to_cart', [CartController::class, 'addToCart']);

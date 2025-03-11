@@ -101,8 +101,8 @@ const apiServicesToReUse = {
     adminLogout(){
         return apiRequest.post('/admin/logout');
     },
-    getAdminInfo(){
-        return apiRequest.get('/admin');
+    getAdminInfo(formData){
+        return apiRequest.post('/admin', formData);
     },
     updateAdminOnebyOneInfo(modalField , editValue){
         const payload = { [modalField]: editValue };

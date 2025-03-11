@@ -1,4 +1,4 @@
-<template>
+<template> <br><br>
   <div class="app-wrapper">
     <div class="container mt-5">
       <div class="header">
