@@ -97,6 +97,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/get_certain_page_to_edit', [PageDetailController::class, 'getCertainPagesDetailToEdit']);
     Route::delete('/admin/delete_page_detail', [PageDetailController::class, 'deletePageDetail']);
 
+    Route::post('/admin/get_order_list', [OrderBillingDetailsController::class, 'orderList']);
+
     Route::post('/logout', [UserController::class, 'logout']);
     Route::post('/admin/logout', [AdminController::class, 'logout']);
 });

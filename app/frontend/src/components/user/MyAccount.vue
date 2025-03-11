@@ -44,7 +44,7 @@
               </thead>
               <tbody>
                 <tr v-for="order in orders">
-                  <td><strong>{{ order.id }}</strong></td>
+                  <td><strong>#{{ order.id }}</strong></td>
                   <td>
                     <div class="dropdown">
                       <button

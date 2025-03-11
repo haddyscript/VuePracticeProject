@@ -60,6 +60,58 @@ class OrderBillingDetailsController extends Controller
         return response()->json(['success' => 'true', 'message' => 'Orders', 'orders' => $formattedOrders], 200, [], JSON_UNESCAPED_UNICODE);
     }
      
+    public function orderList(Request $request) {
+        $search = $request->get('search', []);
+        $page = $request->get('status')['page'] ?? 1;
+        $perPage = 15;
+
+        Log::info($search);
+        $query = OrderBillingDetails::query();
+        
+        if (isset($search['order_id']) && !empty($search['order_id'])) {
+            $orderId = ltrim($search['order_id'], '#');
+            $query->where('id', $orderId);
+        }
+          
+    
+        if (isset($search['this_week']) && !empty($search['this_week'])) {
+            $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        }
+        if (isset($search['this_month']) && !empty($search['this_month'])) {
+            $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]);
+        }
+        if (isset($search['last_3_months']) && !empty($search['last_3_months'])) {
+            $query->whereBetween('created_at', [now()->subMonths(3)->startOfMonth(), now()->endOfMonth()]);
+        }
+    
+        if (isset($search['for_paid']) && !empty($search['for_paid'])) {
+            $query->where('is_paid', 1);
+        } elseif (isset($search['for_pending']) && !empty($search['for_pending'])) {
+            $query->where('is_paid', 0);
+        } elseif (isset($search['for_cancelled']) && !empty($search['for_cancelled'])) {
+            $query->where('is_paid', 2);
+        }
+        $order_products = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $order_data = collect($order_products->items())->map(function ($order) {
+            $productDetails = json_decode($order->product_details, true);
+            
+            $order->product_names = array_column($productDetails, 'product_name');
+    
+            return $order;
+        });
+    
+        return response()->json([
+            'success' => true,
+            'order_products' => $order_data, 
+            'pagination' => [
+                'current_page' => $order_products->currentPage(),
+                'last_page' => $order_products->lastPage(),
+                'per_page' => $order_products->perPage(),
+                'total' => $order_products->total(),
+            ],
+        ], 200);
+    }        
     
 
     public function addToOrder(Request $request) {
@@ -131,7 +183,7 @@ class OrderBillingDetailsController extends Controller
         do {
             // Generate a random 5-digit number
             $randomNumber = rand(10000, 99999);
-            $orderId = '#' . $randomNumber;
+            $orderId = $randomNumber;
 
             $exists = OrderBillingDetails::where('id', $orderId)->exists();
         } while ($exists);

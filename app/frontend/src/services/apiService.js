@@ -160,6 +160,9 @@ const apiServicesToReUse = {
     },
     deleteCoupon(formData){
         return apiRequest.post('/admin/delete_coupon', formData);
+    },
+    getOrderList(formData){
+        return apiRequest.post('/admin/get_order_list', formData);
     }
 };
 

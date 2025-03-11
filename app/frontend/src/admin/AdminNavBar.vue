@@ -366,7 +366,6 @@ export default {
 			formData.append("admin_id", adminData.id); 
 
 			const response = await apiRequest.getAdminInfo(formData);
-			console.log(response);
 			if(response != null || response != 'undefined'){
 				this.admin = response.data.admin;
 			}
