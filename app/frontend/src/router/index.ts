@@ -175,7 +175,7 @@ router.beforeEach((to, from, next) => {
     return next('/');
   }if (to.path === '/register' && user) {
     return next('/');
-  }if (to.path === '/cart' && !user) {
+  }if (to.path === '/cart' && !user || to.path === '/checkout' && !user || to.path === '/account' && !user) {
     return next('/');
   }
   next();

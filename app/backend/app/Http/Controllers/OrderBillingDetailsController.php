@@ -93,6 +93,7 @@ class OrderBillingDetailsController extends Controller
 
         $validatedData = $this->validateOrderData($request);
         $validatedData['payment_reference'] = $payNow['reference_id'] ?? null;
+        $validatedData['id'] = $this->generateUniqueOrderId();
 
         $order = OrderBillingDetails::create($validatedData);
     
@@ -107,6 +108,19 @@ class OrderBillingDetailsController extends Controller
                 'redirect_url' => $payNow['redirect_url'] ?? null
             ], 201);
     }
+    private function generateUniqueOrderId()
+    {
+        do {
+            // Generate a random 5-digit number
+            $randomNumber = rand(10000, 99999);
+            $orderId = '#' . $randomNumber;
+
+            $exists = OrderBillingDetails::where('id', $orderId)->exists();
+        } while ($exists);
+
+        return $orderId;
+    }
+
     
     private function validateOrderData(Request $request) {
         $validatedData = $request->validate([

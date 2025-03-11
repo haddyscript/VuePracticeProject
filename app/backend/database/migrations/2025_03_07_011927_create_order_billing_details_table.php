@@ -9,7 +9,7 @@ class CreateOrderBillingDetailsTable extends Migration
     public function up()
     {
         Schema::create('order_billing_details', function (Blueprint $table) {
-            $table->id();
+            $table->string('id', 200)->primary();
             $table->string('payment_reference', 300)->nullable();
             $table->string('country', 100);
             $table->int('user_id');

@@ -41,12 +41,12 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="order in orders" :key="order.id">
+                <tr v-for="order in orders">
                   <td><strong>{{ order.id }}</strong></td>
                   <td><span v-if="order.is_paid">Paid</span><span v-else>Unpaid</span></td>
                   <td><strong>{{ order.order_total }}</strong></td>
                   <td><strong>{{ order.payment_reference }}</strong></td>
-                  <td><strong>{{ order.coupon_code || 'None' }}</strong></td>
+                  <td><strong>{{ order.coupon_code !== 'null' ? order.coupon_code : 'N/A' }}</strong></td>
                   <td>{{ order.address }}, {{ order.state_country }}, {{ order.postal_zip }}</td>
                   <td>{{ getPaymentMethod(order.mode_of_payment) }}</td>
                   <td>{{ formatDate(order.created_at) }}</td>

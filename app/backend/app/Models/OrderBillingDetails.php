@@ -10,8 +10,11 @@ class OrderBillingDetails extends Model
     use HasFactory;
 
     protected $table = 'order_billing_details';
+    public $incrementing = false; 
+    protected $keyType = 'string'; 
 
     protected $fillable = [
+        'id',
         'user_id',
         'country',
         'first_name',
