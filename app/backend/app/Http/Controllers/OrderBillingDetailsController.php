@@ -62,7 +62,7 @@ class OrderBillingDetailsController extends Controller
      
     public function orderList(Request $request) {
         $search = $request->get('search', []);
-        $page = $request->get('status')['page'] ?? 1;
+        $page = isset($request->get('status')['page']) ? $request->get('status')['page'] : 1;
         $perPage = 15;
 
         Log::info($search);

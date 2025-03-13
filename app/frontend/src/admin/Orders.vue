@@ -16,7 +16,7 @@
 					                        <input v-model="searchQuery" type="text" class="form-control search-orders" placeholder="Search">
 					                    </div>
 					                    <div class="col-auto">
-					                        <button class="btn app-btn-secondary" @click.prevent="searchOrders">Search</button>
+					                        <button class="btn app-btn-secondary" @click.prevent="searchOrders(page = 1)">Search</button>
 					                    </div>
 					                </form>
 							    </div>
@@ -144,7 +144,7 @@
                 this.searchOrders(page);
             }
         },
-        async searchOrders(page = 1) { 
+        async searchOrders(page) { 
             try {
                 const formData = {
                     search: {
