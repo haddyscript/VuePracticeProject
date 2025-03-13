@@ -32,7 +32,7 @@
 									</select>
 							    </div>
 							    <div class="col-auto">						    
-								    <a class="btn app-btn-secondary" href="#">
+								    <a class="btn app-btn-secondary" href="#" @click="downloadCSV">
 									    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download me-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 										  <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
 										  <path fill-rule="evenodd" d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
@@ -71,7 +71,7 @@
 													</ul>
 												</td>
 												<td class="cell">{{ order.first_name + " " + order.last_name }}</td>
-												<td class="cell">{{ order.created_at }}</td>
+												<td class="cell">{{ formatDate(order.created_at) }}</td>
 												<td class="cell">
 													<span :class="badgeClass(order.is_paid)">
 														{{ order.is_paid === 0 ? "Pending" : order.is_paid === 1 ? "Paid" : order.is_paid === 2 ? "Cancelled" : " " }}
@@ -171,7 +171,48 @@
             } catch (e) {    
                 console.error(e);
             }
-        }
+        },
+		formatDate(dateString) {
+			if (!dateString) return '-';
+				const date = new Date(dateString);
+				return date.toLocaleString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric',
+					hour: '2-digit',
+					minute: '2-digit',
+					second: '2-digit',
+					hour12: true
+				}
+			);
+		},
+		downloadCSV() {
+			if (!this.orderList || this.orderList.length === 0) {
+				alert("No data available for download.");
+				return;
+			}
+
+			const headers = ["Order ID", "Products", "Customer", "Total", "Status", "Created At","Time"];
+
+			const rows = this.orderList.map(order => [
+				"#" + order.id,
+				order.product_names ? order.product_names.join(" | ") : "N/A", 
+				`${order.first_name} ${order.last_name}`, 
+				order.order_total || "0", 
+				order.is_paid == 1 ? "Paid" : order.is_paid == 0 ? "Pending" : "Cancelled", 
+				new Date(order.created_at).toLocaleString() 
+			]);
+
+			const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+
+			const blob = new Blob([csvContent], { type: "text/csv" });
+			const link = document.createElement("a");
+			link.href = URL.createObjectURL(blob);
+			link.download = "orders.csv";
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
     }
 };
 

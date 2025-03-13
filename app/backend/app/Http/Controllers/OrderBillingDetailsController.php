@@ -91,6 +91,7 @@ class OrderBillingDetailsController extends Controller
         } elseif (isset($search['for_cancelled']) && !empty($search['for_cancelled'])) {
             $query->where('is_paid', 2);
         }
+        $query->orderBy('created_at', 'desc');
         $order_products = $query->paginate($perPage, ['*'], 'page', $page);
 
         $order_data = collect($order_products->items())->map(function ($order) {
