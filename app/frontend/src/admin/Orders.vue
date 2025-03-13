@@ -77,11 +77,13 @@
 														{{ order.is_paid === 0 ? "Pending" : order.is_paid === 1 ? "Paid" : order.is_paid === 2 ? "Cancelled" : " " }}
 													</span>
 												</td>
-												<td class="cell">{{ order.order_total }}</td>
-												<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
+												<td class="cell">P{{ order.order_total }}</td>
+												<td v-if="order.is_paid === 0" class="cell">
+													<a class="btn btn-sm app-btn-secondary text-danger" @click="openModal(order.id)">Cancel</a>
+												</td>
 											</tr>
-										</tbody>
-									</table>
+											</tbody>
+										</table>
 						        </div>
 						    </div>
 						</div>
@@ -106,6 +108,25 @@
 				</div>
 		    </div>
 	    </div>
+		<!-- Confirmation Modal -->
+		<div class="modal fade" id="confirmCancelModal" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Confirm Cancellation</h5>
+					<button type="button" class="btn-close" @click="closeModal"></button>
+				</div>
+				<div class="modal-body">
+					Are you sure you want to cancel this order?
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary" @click="closeModal">No</button>
+					<button class="btn btn-danger" @click="confirmCancel(order_id)">Yes, Cancel</button>
+				</div>
+				</div>
+			</div>
+		</div>
+		
     </div>
 </template>
 
@@ -119,7 +140,8 @@
             searchQuery: "",
             selectedFilter: "All",
             orderList: [],
-			pagination: {}
+			pagination: {},
+			selectedOrderId : null,
         };
     },
 	mounted(){
@@ -212,6 +234,36 @@
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
+		},
+		openModal(orderId) {
+			this.selectedOrderId = orderId; 
+			const modal = new bootstrap.Modal(document.getElementById("confirmCancelModal"));
+			modal.show();
+		},
+		closeModal() {
+			const modalEl = document.getElementById("confirmCancelModal");
+			const modal = bootstrap.Modal.getInstance(modalEl);
+			this.selectedOrderId = null;
+			modal.hide();
+		},
+		async confirmCancel() {
+			if (!this.selectedOrderId) return;
+			try{
+				const formData = new FormData();
+				formData.append("order_id", this.selectedOrderId);
+				const response = await apiRequest.cancelOrder(formData);
+
+				if(response.data.success == "true"){
+					showAlert("success", "Done!", response.data.message);
+					this.searchOrders();
+				}else{
+					showAlert("error", "Oops!", response.data.message);
+				}
+			}catch(e){
+				error.log(e);
+			}
+
+			this.closeModal();
 		}
     }
 };

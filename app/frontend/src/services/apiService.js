@@ -163,6 +163,10 @@ const apiServicesToReUse = {
     },
     getOrderList(formData){
         return apiRequest.post('/admin/get_order_list', formData);
+    },
+
+    cancelOrder(formData){
+        return apiRequest.post('/cancel_order', formData);
     }
 };
 

@@ -20,7 +20,7 @@
       <div class="account-content">
         <div class="menu">
           <button :class="{ active: activeTab === 'orders' }" @click="activeTab = 'orders'">My Orders</button>
-          <button :class="{ active: activeTab === 'wishlist' }" @click="activeTab = 'wishlist'">Wishlist</button>
+          <button :class="{ active: activeTab === 'history' }" @click="activeTab = 'history'">Order History</button>
           <button :class="{ active: activeTab === 'settings' }" @click="activeTab = 'settings'">Account Settings</button>
         </div>
         
@@ -56,7 +56,7 @@
                       </button>
                       <div v-if="order.is_paid !== 1" class="dropdown-content">
                         <button @click="updateStatus(1)" class="paid">Paid</button>
-                        <button @click="updateStatus(2)" class="cancel">Cancel</button>
+                        <button class="cancel" @click="openModal(order.id)">Cancel</button>
                       </div>
                     </div>
                   </td>
@@ -67,47 +67,64 @@
                   <td>{{ getPaymentMethod(order.mode_of_payment) }}</td>
                   <td>{{ formatDate(order.created_at) }}</td>
                   <td>
-                    <table class="product-table">
-                      <thead>
-                        <tr>
-                          <th>Image</th>
-                          <th>Product Name</th>
-                          <th>Price (PHP)</th>
-                          <th>Quantity</th>
-                          <th>Subtotal (PHP)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="product in order.product_details" :key="product.id">
-                          <td>
-                            <img 
-                              :src="getProductImage(product.image_data[0])" 
-                              class="product-thumbnail" 
-                              alt="Product Image"
-                            />
-                          </td>
-                          <td><strong>{{ product.product_name }}</strong></td>
-                          <td>{{ product.product_price }}</td>
-                          <td>{{ product.quantity }}</td>
-                          <td><strong>{{ product.total_price }}</strong></td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <button class="btn btn-sm btn-primary" style="font-size: 10px;" @click="openProductModal(order)">
+                      View
+                    </button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+   
           <br><br>
           
-          <div v-if="activeTab === 'wishlist'" class="wishlist-section">
-            <h3>Wishlist</h3>
-            <div v-for="item in wishlist" :key="item.id" class="wishlist-item">
-              <div class="item-details">
-                <p><strong>{{ item.name }}</strong></p>
-                <p>Price: <strong>{{ item.price }} PHP</strong></p>
-              </div>
-            </div>
+          <div v-if="activeTab === 'history'" class="wishlist-section">
+            <h3>Order History</h3>
+            <table class="order-table">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Status</th>
+                  <th>Total (PHP)</th>
+                  <th>Payment Reference</th>
+                  <th>Coupon Code</th>
+                  <th>Address</th>
+                  <th>Mode of Payment</th>
+                  <th>Ordered At</th>
+                  <th>Products</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="order in order_history">
+                  <td><strong>#{{ order.id }}</strong></td>
+                  <td>
+                    <div class="dropdown">
+                      <button
+                        class="status-btn"
+                        :class="statusClass(order.is_paid)"
+                        :disabled="order.is_paid == 1"
+                      >
+                        {{ statusText(order.is_paid) }}
+                      </button>
+                      <div v-if="order.is_paid !== 1" class="dropdown-content">
+                        <button @click="updateStatus(1)" class="paid">Paid</button>
+                      </div>
+                    </div>
+                  </td>
+                  <td><strong>{{ order.order_total }}</strong></td>
+                  <td><strong>{{ order.payment_reference }}</strong></td>
+                  <td><strong>{{ order.coupon_code !== 'null' ? order.coupon_code : 'N/A' }}</strong></td>
+                  <td>{{ order.address }}, {{ order.state_country }}, {{ order.postal_zip }}</td>
+                  <td>{{ getPaymentMethod(order.mode_of_payment) }}</td>
+                  <td>{{ formatDate(order.created_at) }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-primary" style="font-size: 10px;" @click="openProductModal(order)">
+                      View
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           
           <div v-if="activeTab === 'settings'" class="settings-section">
@@ -185,6 +202,69 @@
         </div>
       </div>
     </div>
+
+    <!-- Product Details Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Order #{{ selectedOrder?.id }} - Product Details</h5>
+            <button type="button" class="btn-close" @click="closeProductModal"></button>
+          </div>
+          <div class="modal-body">
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Price (PHP)</th>
+                  <th>Quantity</th>
+                  <th>Subtotal (PHP)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="product in selectedOrder?.product_details" :key="product.id">
+                  <td>
+                    <img 
+                      :src="getProductImage(product.image_data[0])" 
+                      class="product-thumbnail" 
+                      alt="Product Image"
+                    />
+                  </td>
+                  <td><strong>{{ product.product_name }}</strong></td>
+                  <td>{{ product.product_price }}</td>
+                  <td>{{ product.quantity }}</td>
+                  <td><strong>{{ product.total_price }}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="closeProductModal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+		<div class="modal fade" id="confirmCancelModal" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Confirm Cancellation</h5>
+					<button type="button" class="btn-close" @click="closeModal"></button>
+				</div>
+				<div class="modal-body">
+					Are you sure you want to cancel this order?
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary" @click="closeModal">No</button>
+					<button class="btn btn-danger" @click="confirmCancel(order_id)">Yes, Cancel</button>
+				</div>
+				</div>
+			</div>
+		</div>
+
   </template>
   
   <script>
@@ -199,24 +279,33 @@
         activeTab: 'settings',
         user: [],
         orders: [],
-        wishlist: [
-          { id: 1, name: 'Product 1', price: 300 },
-          { id: 2, name: 'Product 2', price: 450 }
-        ],
+        order_history: [],
         profileImage: "https://via.placeholder.com/150",
         selectedFile: null, 
-        previewImage: null, 
+        selectedOrder: null,
+        selectedOrderId : null,
       };
     },
     mounted() {
       this.getUser();
       this.getMyOrders();
+      this.orderHistory();
       this.getCountry();
       setTimeout(() => {
-			this.isLoading = false; 
-		}, 1000);
+        this.isLoading = false; 
+      }, 1000);
     },
     methods: {
+      openProductModal(order) {
+        this.selectedOrder = order;
+        const modal = new bootstrap.Modal(document.getElementById("productModal"));
+        modal.show();
+      },
+      closeProductModal() {
+        const modalEl = document.getElementById("productModal");
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+      },
       statusText(status) {
           switch (status) {
             case 0:
@@ -344,6 +433,24 @@
                 console.log(error);
             }
         },
+        async orderHistory() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (!user) return;
+
+                const formData = new FormData();
+                formData.append('user_id', user.id);
+                formData.append('history', true);
+
+                const response = await apiRequest.getMyOrders(formData);
+                console.log('Order History : ', response);
+                if (response.data) {
+                    this.order_history = response.data.orders;
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
 
       prepareUserFormData() {
           const formData = new FormData();
@@ -376,6 +483,37 @@
                 console.log(error);
             }
         },
+        openModal(orderId) {
+          this.selectedOrderId = orderId; 
+          const modal = new bootstrap.Modal(document.getElementById("confirmCancelModal"));
+          modal.show();
+        },
+      closeModal() {
+        const modalEl = document.getElementById("confirmCancelModal");
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        this.selectedOrderId = null;
+        modal.hide();
+      },
+      async confirmCancel() {
+        if (!this.selectedOrderId) return;
+        try{
+          const formData = new FormData();
+          formData.append("order_id", this.selectedOrderId);
+          const response = await apiRequest.cancelOrder(formData);
+
+          if(response.data.success == "true"){
+            showAlert("success", "Done!", response.data.message);
+            this.getMyOrders();
+            this.orderHistory();
+          }else{
+            showAlert("error", "Oops!", response.data.message);
+          }
+        }catch(e){
+          error.log(e);
+        }
+
+        this.closeModal();
+      }
 
     }
   };
@@ -471,9 +609,7 @@ button:disabled {
     padding: 20px;
     border-radius: 8px;
   }
-  .orders-section{
-    width: 130vh;
-  }
+
   .orders-section, .wishlist-section, .settings-section {
     padding: 15px;
     background: #fff;
@@ -588,13 +724,10 @@ button:disabled {
   background-color: green;
   color: white;
   cursor: not-allowed;
+  font-size: 13px;
 }
 
-.status-bt.cancel {
-  background-color: red !important;
-  color: white;
-}
-.dropdown-content.cancel{
+.dropdown .cancel {
   background-color: red !important;
   color: white;
 }

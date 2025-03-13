@@ -17,7 +17,11 @@ class OrderBillingDetailsController extends Controller
             return response()->json(['success' => 'false', 'message' => 'User id is required'], 200);
         }
     
-        $orders = OrderBillingDetails::where('user_id', $request['user_id'])->get();
+        if(isset($request['history']) && !empty($request['history'])) {
+            $orders = OrderBillingDetails::where('user_id', $request['user_id'])->where('is_paid', '!=', 0)->orderBy('created_at', 'desc')->get();
+        }else{
+            $orders = OrderBillingDetails::where('user_id', $request['user_id'])->where('is_paid', '!=', 2)->orderBy('created_at', 'desc')->get();
+        }
     
         if ($orders->isEmpty()) {
             return response()->json(['success' => 'false', 'message' => 'No orders found'], 200);
@@ -65,7 +69,6 @@ class OrderBillingDetailsController extends Controller
         $page = isset($request->get('status')['page']) ? $request->get('status')['page'] : 1;
         $perPage = 15;
 
-        Log::info($search);
         $query = OrderBillingDetails::query();
         
         if (isset($search['order_id']) && !empty($search['order_id'])) {
@@ -225,6 +228,25 @@ class OrderBillingDetailsController extends Controller
         $validatedData['product_details'] = json_encode(array_map(fn($p) => collect($p)->except(['coupon', 'created_at', 'updated_at'])->toArray(), $productDetails));
         
         return $validatedData;
+    }
+
+    public function cancelOrder(Request $request) {
+        
+        $orderId = $request->order_id;
+
+        if(empty($orderId)) {
+            return response()->json(['success' => 'false', 'message' => 'Order id is required'], 200);
+        }
+
+        $order = OrderBillingDetails::where('id', $orderId)->first();
+
+        if(empty($order)) {
+            return response()->json(['success' => 'false', 'message' => 'Order not found'], 200);   
+        }
+
+        $order->update(['is_paid' => 2]);
+
+        return response()->json(['success' => 'true', 'message' => 'Order cancelled successfully'], 200);
     }
         
 }
