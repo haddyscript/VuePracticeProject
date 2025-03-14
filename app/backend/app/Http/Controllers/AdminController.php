@@ -291,6 +291,29 @@ class AdminController extends Controller
 
         $mostUsedPaymentMethod = $getMethodOfPaymentMostUsed ? ($paymentMethods[$getMethodOfPaymentMostUsed->mode_of_payment] ?? 'Unknown')  : 'No Data';
 
+        // User Growth (compared to last month)
+        $lastMonthUsers = User::whereBetween('created_at', [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()])->count();
+        $userGrowth = ($lastMonthUsers > 0) ? (($totalRegisteredUsers - $lastMonthUsers) / $lastMonthUsers) * 100 : 0;
+
+        // Order Fulfillment Rate
+        $orderFulfillmentRate = ($totalOrders > 0) ? ($completedOrders / $totalOrders) * 100 : 0;
+
+        // New Order Pending Rate
+        $pendingOrders = OrderBillingDetails::where('is_paid', 0)->count();
+        $newOrderPendingRate = ($totalOrders > 0) ? ($pendingOrders / $totalOrders) * 100 : 0;
+
+        // Sales Growth This Month (compared to last month)
+        $lastMonthSales = OrderBillingDetails::where('is_paid', 1)
+            ->whereBetween('created_at', [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()])
+            ->sum('order_total');
+        $salesGrowthMonth = ($lastMonthSales > 0) ? (($totalSales - $lastMonthSales) / $lastMonthSales) * 100 : 0;
+
+        // Sales Growth This Week (compared to last week)
+        $lastWeekSales = OrderBillingDetails::where('is_paid', 1)
+            ->whereBetween('created_at', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()])
+            ->sum('order_total');
+        $salesGrowthWeek = ($lastWeekSales > 0) ? (($totalSales - $lastWeekSales) / $lastWeekSales) * 100 : 0;
+        
         return response()->json([
             'success' => 'true',
             'message' => 'Admin landing page details fetched successfully!',
@@ -307,9 +330,13 @@ class AdminController extends Controller
             'averageOrderValue' => number_format($averageOrderValue, 2),
             'getMethodOfPaymentMostUsed' => $mostUsedPaymentMethod,
             'productLists' => $productLists,
-            'newOrders' => $newOrders
+            'newOrders' => $newOrders,
+            'userGrowth' => number_format($userGrowth, 2),
+            'orderFulfillmentRate' => number_format($orderFulfillmentRate, 2),
+            'newOrderPendingRate' => number_format($newOrderPendingRate, 2),
+            'salesGrowthMonth' => number_format($salesGrowthMonth, 2),
+            'salesGrowthWeek' => number_format($salesGrowthWeek, 2)
         ], 200);
     }
-    
 
 }
