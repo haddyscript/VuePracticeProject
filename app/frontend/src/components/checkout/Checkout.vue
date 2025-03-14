@@ -377,7 +377,6 @@ export default {
 		}, 
 		async placeOrder() {
 			if (this.mode_of_payment == 4 && this.gcashNumber == '') {
-
 				this.showGcashModal = true;
 				return;
 			}else{

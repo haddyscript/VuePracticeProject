@@ -125,6 +125,24 @@ class OrderBillingDetailsController extends Controller
         if (empty($request->mode_of_payment)) {
             return response()->json(['success' => 'false', 'message' => 'Mode of payment is required'], 200);
         }
+        if($request->address == null || $request->address == '' || $request->address == 'null') {
+            return response()->json(['success' => 'false', 'message' => 'Please enter your address for shipping, Thank you!'], 200);
+        }
+        if($request->state_country == null || $request->state_country == '' || $request->state_country == 'null') {
+            return response()->json(['success' => 'false', 'message' => 'Please enter your state or country for shipping, Thank you!'], 200);
+        }
+        if($request->country == null || $request->country == '' || $request->country == 'null') {
+            return response()->json(['success' => 'false', 'message' => 'Please enter your country for shipping, Thank you!'], 200);
+        }
+        if($request->postal_zip == null || $request->postal_zip == '' || $request->postal_zip == 'null') {
+            return response()->json(['success' => 'false', 'message' => 'Please enter your Postal or Zip Code for shipping, Thank you!'], 200);
+        }
+        if($request->phone == null || $request->phone == '' || $request->phone == 'null') {
+            return response()->json(['success' => 'false', 'message' => 'Please enter your Phone Number for shipping, Thank you!'], 200);
+        }
+        if($request->email_address == null || $request->email_address == '' || $request->email_address == 'null') {
+            return response()->json(['success' => 'false', 'message' => 'Please enter your email address for shipping, Thank you!'], 200);
+        }
         
         if($request->mode_of_payment == 4) {
             if(!$request->has('gcash_number')) {
