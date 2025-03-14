@@ -474,9 +474,10 @@
             try {
                 const response = await apiRequest.updateUser(this.prepareUserFormData());
                 if (response.data?.success === 'true') {
-                    this.user = response.data.user;
+                    this.getUser();
                     showAlert("success", "Nice!", response.data.message);
                 } else {
+                    this.getUser();
                     showAlert("error", "Oops!", response.data.message);
                 }
             } catch (error) {

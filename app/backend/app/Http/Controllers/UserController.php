@@ -197,8 +197,7 @@ class UserController extends Controller
         return response()->json([
             'success' => 'true',
             'status' => 'success',
-            'message' => 'Profile updated successfully',
-            'user' =>  User::where('id', $request->user_id)->first()
+            'message' => 'Profile updated successfully'
         ], 200);
     }
 

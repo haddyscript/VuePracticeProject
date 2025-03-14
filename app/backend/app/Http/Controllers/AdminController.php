@@ -263,13 +263,33 @@ class AdminController extends Controller
         $totalOrders = OrderBillingDetails::whereIn('is_paid', [0, 1])->count();
         $totalProducts = Product::where('live', 1)->count();
         $totalCancelled = OrderBillingDetails::where('is_paid', 2)->sum('order_total'); 
-        $inVoiceList = OrderBillingDetails::where('is_paid', 1)->inRandomOrder()->take(5)->get();
+        $inVoiceList = OrderBillingDetails::where('is_paid', 1)->orderByDesc('created_at')->take(5)->get();
         $totalRegisteredUsers = User::count();
         $totalActiveUsers = User::where('is_active', 1)->count();
         $totalProductsQuantity = Product::where('live', 1)->sum('stock_quantity');
         $totalOutOfStockProducts = Product::where('live', 1)->where('stock_quantity', 0)->count();
-    
+        $productLists = Product::where('live', 1)->take(5)->orderBy('stock_quantity', 'asc')->get();
+        $newOrders = OrderBillingDetails::where('is_paid', 0)->orderByDesc('created_at')->take(5)->get();
+
         $revenue = $totalSales - $totalCancelled;
+        $completedOrders = OrderBillingDetails::where('is_paid', 1)->count(); 
+        $averageOrderValue = ($completedOrders > 0) ? $revenue / $completedOrders : 0; 
+
+        $getMethodOfPaymentMostUsed = OrderBillingDetails::where('is_paid', 1)
+            ->whereNotNull('mode_of_payment')
+            ->groupBy('mode_of_payment')
+            ->selectRaw('mode_of_payment, count(*) as count')
+            ->orderByDesc('count')
+            ->first();
+
+        $paymentMethods = [
+            1 => 'COD',
+            2 => 'Bank',
+            3 => 'PayPal',
+            4 => 'Gcash'
+        ];
+
+        $mostUsedPaymentMethod = $getMethodOfPaymentMostUsed ? ($paymentMethods[$getMethodOfPaymentMostUsed->mode_of_payment] ?? 'Unknown')  : 'No Data';
 
         return response()->json([
             'success' => 'true',
@@ -283,7 +303,11 @@ class AdminController extends Controller
             'totalActiveUsers' => $totalActiveUsers,
             'totalProductsQuantity' => $totalProductsQuantity,
             'totalOutOfStockProducts' => $totalOutOfStockProducts,
-            'revenue' => number_format($revenue, 2)
+            'revenue' => number_format($revenue, 2),
+            'averageOrderValue' => number_format($averageOrderValue, 2),
+            'getMethodOfPaymentMostUsed' => $mostUsedPaymentMethod,
+            'productLists' => $productLists,
+            'newOrders' => $newOrders
         ], 200);
     }
     
