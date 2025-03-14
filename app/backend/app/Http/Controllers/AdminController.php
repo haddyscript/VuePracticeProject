@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Admin;
 use App\Models\OrderBillingDetails;
 use App\Models\Product;
+use App\Models\User;
 
 class AdminController extends Controller
 {
@@ -262,14 +263,27 @@ class AdminController extends Controller
         $totalOrders = OrderBillingDetails::whereIn('is_paid', [0, 1])->count();
         $totalProducts = Product::where('live', 1)->count();
         $totalCancelled = OrderBillingDetails::where('is_paid', 2)->sum('order_total'); 
+        $inVoiceList = OrderBillingDetails::where('is_paid', 1)->inRandomOrder()->take(5)->get();
+        $totalRegisteredUsers = User::count();
+        $totalActiveUsers = User::where('is_active', 1)->count();
+        $totalProductsQuantity = Product::where('live', 1)->sum('stock_quantity');
+        $totalOutOfStockProducts = Product::where('live', 1)->where('stock_quantity', 0)->count();
     
+        $revenue = $totalSales - $totalCancelled;
+
         return response()->json([
             'success' => 'true',
             'message' => 'Admin landing page details fetched successfully!',
             'totalSales' => $totalSales, 
             'inVoices' => $totalOrders,
             'totalProducts' => $totalProducts,
-            'totalCancelled' => $totalCancelled
+            'totalCancelled' => $totalCancelled,
+            'inVoiceList' => $inVoiceList,
+            'totalRegisteredUsers' => $totalRegisteredUsers,
+            'totalActiveUsers' => $totalActiveUsers,
+            'totalProductsQuantity' => $totalProductsQuantity,
+            'totalOutOfStockProducts' => $totalOutOfStockProducts,
+            'revenue' => number_format($revenue, 2)
         ], 200);
     }
     

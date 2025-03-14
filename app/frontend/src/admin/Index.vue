@@ -225,15 +225,15 @@
 							        <table class="table table-borderless mb-0">
 										<thead>
 											<tr>
-												<th class="meta">Source</th>
-												<th class="meta stat-cell">Views</th>
-												<th class="meta stat-cell">Today</th>
+												<th class="meta">Metric</th>
+												<th class="meta stat-cell">Value</th>
+												<th class="meta stat-cell">Change (%)</th>
 											</tr>
 										</thead>
 										<tbody>
 											<tr>
-												<td><a href="#">google.com</a></td>
-												<td class="stat-cell">110</td>
+												<td><router-link to="/admin">Active User</router-link></td>
+												<td class="stat-cell">{{ totalActiveUsers }}</td>
 												<td class="stat-cell">
 													<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-up text-success" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 									  <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
@@ -242,13 +242,13 @@
 									            </td>
 											</tr>
 											<tr>
-												<td><a href="#">getbootstrap.com</a></td>
-												<td class="stat-cell">67</td>
+												<td><a href="#">Registered User</a></td>
+												<td class="stat-cell">{{ totalRegisteredUsers }}</td>
 												<td class="stat-cell">23%</td>
 											</tr>
 											<tr>
-												<td><a href="#">w3schools.com</a></td>
-												<td class="stat-cell">56</td>
+												<td><router-link to="/admin/product">Products Quantity</router-link></td>
+												<td class="stat-cell">{{ totalProductsQuantity }}</td>
 												<td class="stat-cell">
 													<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-down text-danger" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 									  <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
@@ -257,13 +257,18 @@
 											    </td>
 											</tr>
 											<tr>
-												<td><a href="#">javascript.com </a></td>
-												<td class="stat-cell">24</td>
+												<td><router-link to="/admin/product">Total ProductsOut of Stock </router-link></td>
+												<td class="stat-cell">{{ totalOutOfStockProducts }}</td>
 												<td class="stat-cell">-</td>
 											</tr>
 											<tr>
-												<td><a href="#">github.com </a></td>
-												<td class="stat-cell">17</td>
+												<td><router-link to="/admin/orders">Total Revenue </router-link></td>
+												<td class="stat-cell">{{ revenue }}</td>
+												<td class="stat-cell">15%</td>
+											</tr>
+											<tr>
+												<td><router-link to="/admin/orders">Total Orders </router-link></td>
+												<td class="stat-cell">{{ inVoices }}</td>
 												<td class="stat-cell">15%</td>
 											</tr>
 										</tbody>
@@ -293,11 +298,29 @@
 						        </div><!--//row-->
 						    </div><!--//app-card-header-->
 						    <div class="app-card-body px-4">
-							    
-							    <div class="intro">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam aliquet eros vel diam semper mollis.</div>
+								<div class="intro">
+									<table class="table">
+										<thead>
+											<tr>
+												<th>Reference</th>
+												<th>Amount (₱)</th>
+												<th>MOD</th>
+												<th>Date</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr v-for="invoice in inVoiceList" :key="invoice.id">
+												<td>#{{ invoice.id }}</td>
+												<td>₱{{ invoice.order_total }}</td>
+												<td>{{ invoice.mode_of_payment == 1 ? 'Cash' : invoice.mode_of_payment == 2 ? 'Bank' : invoice.mode_of_payment == 3 ? 'Pay Pal' : invoice.mode_of_payment == 4 ? 'Gcash' : ' ' }}</td>
+												<td>{{ new Date(invoice.created_at).toLocaleDateString() }}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
 						    </div><!--//app-card-body-->
 						    <div class="app-card-footer p-4 mt-auto">
-							   <a class="btn app-btn-secondary" href="#">Create New</a>
+							   <router-link to="/admin/orders" class="btn app-btn-secondary" href="#">Open</router-link>
 						    </div><!--//app-card-footer-->
 						</div><!--//app-card-->
 				    </div><!--//col-->
@@ -399,6 +422,12 @@ export default {
 			total_sales : null,
 			inVoices : null,
 			totalCancelled : null,
+			totalProductsQuantity : null,
+			totalRegisteredUsers: null,
+			totalOutOfStockProducts : null,
+			totalActiveUsers : null,
+			revenue : null,
+			inVoiceList: [],
 			chartData: {
 				labels: [], 
 				datasets: [
@@ -469,11 +498,18 @@ export default {
 		async getAdminLandingPage() {
 			try {
 				const response = await apiRequest.adminLandingPage();
+				console.log(response.data);
 				if (response.data.success == "true") {
 					this.total_products = response.data.totalProducts;
 					this.total_sales = response.data.totalSales;
 					this.inVoices = response.data.inVoices;
 					this.totalCancelled = response.data.totalCancelled;
+					this.inVoiceList = response.data.inVoiceList;
+					this.totalProductsQuantity = response.data.totalProductsQuantity;
+					this.totalRegisteredUsers = response.data.totalRegisteredUsers;
+					this.totalOutOfStockProducts = response.data.totalOutOfStockProducts;
+					this.totalActiveUsers = response.data.totalActiveUsers;
+					this.revenue = response.data.revenue;
 				}
 				this.startAnimation();
 			} catch (error) {
