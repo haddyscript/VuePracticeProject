@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);        
     });
     Route::post('/admin', [AdminController::class, 'getAdminInfo']);
+    Route::get('/admin_landing_page', [AdminController::class, 'adminLandingPageDetails']);
     Route::post('/admin/update_profile_picture', [AdminController::class, 'uploadProfilePicture']);
     Route::post('/user/update_user', [UserController::class, 'updateUser']);
     Route::post('/user/update_profile_picture', [UserController::class, 'uploadProfilePicture']);

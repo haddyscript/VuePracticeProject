@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Admin;
+use App\Models\OrderBillingDetails;
+use App\Models\Product;
 
 class AdminController extends Controller
 {
@@ -254,5 +256,22 @@ class AdminController extends Controller
             'message' => 'Profile picture uploaded successfully',
         ], 200);
     }
+
+    public function adminLandingPageDetails() {
+        $totalSales = OrderBillingDetails::where('is_paid', 1)->sum('order_total'); 
+        $totalOrders = OrderBillingDetails::whereIn('is_paid', [0, 1])->count();
+        $totalProducts = Product::where('live', 1)->count();
+        $totalCancelled = OrderBillingDetails::where('is_paid', 2)->sum('order_total'); 
+    
+        return response()->json([
+            'success' => 'true',
+            'message' => 'Admin landing page details fetched successfully!',
+            'totalSales' => $totalSales, 
+            'inVoices' => $totalOrders,
+            'totalProducts' => $totalProducts,
+            'totalCancelled' => $totalCancelled
+        ], 200);
+    }
+    
 
 }

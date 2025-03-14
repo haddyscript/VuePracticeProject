@@ -60,7 +60,7 @@
                       </div>
                     </div>
                   </td>
-                  <td><strong>{{ order.order_total }}</strong></td>
+                  <td><strong>₱{{ order.order_total }}</strong></td>
                   <td><strong>{{ order.payment_reference }}</strong></td>
                   <td><strong>{{ order.coupon_code !== 'null' ? order.coupon_code : 'N/A' }}</strong></td>
                   <td>{{ order.address }}, {{ order.state_country }}, {{ order.postal_zip }}</td>
@@ -111,7 +111,7 @@
                       </div>
                     </div>
                   </td>
-                  <td><strong>{{ order.order_total }}</strong></td>
+                  <td><strong>₱{{ order.order_total }}</strong></td>
                   <td><strong>{{ order.payment_reference }}</strong></td>
                   <td><strong>{{ order.coupon_code !== 'null' ? order.coupon_code : 'N/A' }}</strong></td>
                   <td>{{ order.address }}, {{ order.state_country }}, {{ order.postal_zip }}</td>
@@ -232,9 +232,9 @@
                     />
                   </td>
                   <td><strong>{{ product.product_name }}</strong></td>
-                  <td>{{ product.product_price }}</td>
+                  <td>₱{{ product.product_price }}</td>
                   <td>{{ product.quantity }}</td>
-                  <td><strong>{{ product.total_price }}</strong></td>
+                  <td><strong>₱{{ product.total_price }}</strong></td>
                 </tr>
               </tbody>
             </table>

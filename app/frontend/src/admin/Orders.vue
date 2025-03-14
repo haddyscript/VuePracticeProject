@@ -77,7 +77,7 @@
 														{{ order.is_paid === 0 ? "Pending" : order.is_paid === 1 ? "Paid" : order.is_paid === 2 ? "Cancelled" : " " }}
 													</span>
 												</td>
-												<td class="cell">P{{ order.order_total }}</td>
+												<td class="cell">₱{{ order.order_total }}</td>
 												<td v-if="order.is_paid === 0" class="cell">
 													<a class="btn btn-sm app-btn-secondary text-danger" @click="openModal(order.id)">Cancel</a>
 												</td>
@@ -87,6 +87,7 @@
 						        </div>
 						    </div>
 						</div>
+						<p class="text-center">Total Orders: {{ total_count }}</p>
 						<nav class="app-pagination mt-5" v-if="pagination.total > 0">
 							<ul class="pagination justify-content-center">
 								<li class="page-item" :class="{ 'disabled': pagination.current_page === 1 }">
@@ -103,6 +104,7 @@
 									<a class="page-link" href="#" @click.prevent="changePage(pagination.current_page + 1)">Next</a>
 								</li>
 							</ul>
+
 						</nav>
 			        </div>
 				</div>
@@ -142,6 +144,7 @@
             orderList: [],
 			pagination: {},
 			selectedOrderId : null,
+			total_count: 0
         };
     },
 	mounted(){
@@ -188,6 +191,7 @@
                 if (response.data.success) {
                     this.orderList = response.data.order_products;
                     this.pagination = response.data.pagination;
+					this.total_count = response.data.total_count;
                     console.log('Updated Order List:', this.orderList);
                 }
             } catch (e) {    

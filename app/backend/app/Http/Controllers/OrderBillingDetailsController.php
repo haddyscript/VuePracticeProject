@@ -104,10 +104,12 @@ class OrderBillingDetailsController extends Controller
     
             return $order;
         });
-    
+        $totalCount = $query->count();
+
         return response()->json([
             'success' => true,
             'order_products' => $order_data, 
+            'total_count' => $totalCount,
             'pagination' => [
                 'current_page' => $order_products->currentPage(),
                 'last_page' => $order_products->lastPage(),

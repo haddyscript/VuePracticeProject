@@ -101,6 +101,9 @@ const apiServicesToReUse = {
     adminLogout(formData){
         return apiRequest.post('/admin/logout', formData);
     },
+    adminLandingPage(){
+        return apiRequest.get('/admin_landing_page');
+    },
     getAdminInfo(formData){
         return apiRequest.post('/admin', formData);
     },
