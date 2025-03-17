@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\OrderBillingDetails;
 use Illuminate\Support\Facades\Log;
+use App\Models\Checkout;
 
 class ProductController extends Controller
 {
@@ -322,6 +325,21 @@ class ProductController extends Controller
     }
 
     public function deleteProductById($id){
+
+        $findThisProductIfCheckoutExist = Cart::where('product_id', $id)->first();
+        $findThisProductIfOrderExist = OrderBillingDetails::whereRaw(
+            "JSON_CONTAINS(product_details, ?, '$')", 
+            [json_encode(['product_id' => (int) $id])]
+        )->first();
+        
+
+        if($findThisProductIfCheckoutExist || $findThisProductIfOrderExist){
+            return response()->json([
+                'success' => "false",
+                'status' => 'error',
+                'message' => 'This product is currently in use. Please check again later or contact support for assistance.',                              
+            ], 200);
+        }
 
         $image = ProductImage::where('product_id', $id)->delete();
         if (!$image) {
