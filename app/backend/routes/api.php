@@ -79,6 +79,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/get_order', [OrderBillingDetailsController::class, 'myOrders']);
     Route::post('/cancel_order', [OrderBillingDetailsController::class, 'cancelOrder']);
 
+    Route::post('admin/get_user_list', [UserController::class, 'adminGetUsersList']);
+    Route::post('admin/deactivate_user', [UserController::class, 'deactivateUserAccount']);
+
     Route::post('/admin/create_buiness_detail', [BusinessDetailController::class, 'createBusinessGeneralDetail']);
     Route::post('/admin/update_detail', [AdminController::class, 'changeAdminDetail']);
     Route::post('/admin/add_coupon', [AdminController::class, 'addCoupon']);

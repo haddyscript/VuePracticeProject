@@ -253,6 +253,105 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function adminGetUsersList(Request $request) {
+        $search = $request->get('search', []);
+        $page = $request->get('status')['page'] ?? 1;
+        $perPage = 15;
+    
+        $query = User::query();
+    
+        if(!empty($search['user_id'])){
+            $query->where("id", $search['user_id']);
+        }
+
+        // Filter by creation date
+        if (!empty($search['recent'])) {
+            $query->orderBy('created_at', 'desc');
+        }
+        if (!empty($search['this_week'])) {
+            $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        }
+        if (!empty($search['this_month'])) {
+            $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]);
+        }
+        if (!empty($search['last_3_months'])) {
+            $query->whereBetween('created_at', [now()->subMonths(3)->startOfMonth(), now()->endOfMonth()]);
+        }
+    
+        // Filter by status
+        if (!empty($search['active'])) {
+            $query->where('is_active', 1);
+        } elseif (!empty($search['inactive'])) {
+            $query->where('is_active', 0);
+        }
+    
+        // Filter by verification status
+        if (!empty($search['verified'])) {
+            $query->where('is_verified', 1);
+        } elseif (!empty($search['unverified'])) {
+            $query->where('is_verified', 0);
+        }
+    
+        // Filter by gender
+        if (!empty($search['male'])) {
+            $query->where('gender', 'male');
+        } elseif (!empty($search['female'])) {
+            $query->where('gender', 'female');
+        }
+    
+        $users_list = $query->select(['id', 'first_name', 'last_name', 'email', 'is_active', 'is_verified', 'gender', 'created_at', 'updated_at', 'date_of_birth', 'phone_number', 'address', 'city', 'state', 'country', 'postal_code'])
+        ->paginate($perPage, ['*'], 'page', $page);
+    
+        return response()->json([
+            'success' => true,
+            'total_count' => $users_list->total(),
+            'pagination' => [
+                'current_page' => $users_list->currentPage(),
+                'last_page' => $users_list->lastPage(),
+                'per_page' => $users_list->perPage(),
+                'total' => $users_list->total(),
+            ],
+            'userslists' => $users_list->items()
+        ], 200);
+    }
+
+    public function deactivateUserAccount(Request $request)
+    {
+        if (empty($request->user_id) || $request->user_id == null || $request->user_id == '' || $request->user_id == 'null') {
+            return response()->json([
+                'success' => 'false',
+                'message' => 'User ID is required. Please select a valid User, thank you!'
+            ], 200);
+        }
+
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json([
+                'success' => 'false',
+                'message' => 'User not found. Please check the User ID and try again.'
+            ], 200);
+        }
+
+        if(empty($request->action) || $request->action == null || $request->action == '' || $request->action == 'null') {
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Action not recognized. Please try again or contact support if the issue persists.'
+            ], 200);
+        }
+
+        $user->is_active = $request->action == 'activate' ? 1 : 0;
+        $user->updated_at = now();
+        $user->save();
+
+        return response()->json([
+            'success' => 'true',
+            'message' => $user->is_active == 1 ? 'User account has been successfully activated.' : 'User account has been successfully deactivated.'
+        ], 200);
+    }
+
+       
+
 
 
 }

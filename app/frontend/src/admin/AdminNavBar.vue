@@ -161,10 +161,9 @@
 					        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
 					        <router-link class="nav-link" to="/admin/product">
 						        <span class="nav-icon">
-						        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-folder" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <path d="M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z"/>
-  <path fill-rule="evenodd" d="M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z"/>
-</svg>
+									<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-seam" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+										<path d="M2.32 2.52a.5.5 0 0 1 .22-.1l5-1a.5.5 0 0 1 .2 0l5 1a.5.5 0 0 1 .22.1l2 1.5a.5.5 0 0 1 .2.4V11a.5.5 0 0 1-.2.4l-2 1.5a.5.5 0 0 1-.22.1l-5 1a.5.5 0 0 1-.2 0l-5-1a.5.5 0 0 1-.22-.1l-2-1.5a.5.5 0 0 1-.2-.4V4.42a.5.5 0 0 1 .2-.4l2-1.5ZM7 2.07 3.18 3 7 3.93V2.07Zm1 0V3.93L12.82 3 8 2.07Zm-5.5 1 2 1.5v4.93l-2-1.5V3.07Zm5.5 1L3.68 4.9 8 6.86l4.32-1.95L8 4.07Zm5.5-1v5.93l-2 1.5V4.57l2-1.5ZM3.68 11.1 8 13.07v-4.2L3.68 7.9v3.2Zm9.64 0V7.9L8 8.86v4.2l5.32-1.95Z"/>
+									</svg>
 						         </span>
 		                         <span class="nav-link-text">Products</span>
 					        </router-link><!--//nav-link-->
@@ -182,6 +181,17 @@
 </svg>
 						         </span>
 		                         <span class="nav-link-text">Orders</span>
+					        </router-link><!--//nav-link-->
+					    </li><!--//nav-item-->
+						<li class="nav-item">
+					        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
+					        <router-link class="nav-link" to="/admin/users_list">
+						        <span class="nav-icon">
+									<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-people" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+										<path d="M13 6.5c0 1.333-1.333 2.5-3 2.5s-3-1.167-3-2.5S8.333 4 10 4s3 1.167 3 2.5zM5.5 8c1.667 0 3-1.167 3-2.5S7.167 3 5.5 3 2.5 4.167 2.5 5.5 3.833 8 5.5 8zM2 13c0-1.5 3-3 5.5-3s5.5 1.5 5.5 3v1H2v-1zM1 13v1h14v-1c0-2-4-3.5-7-3.5S1 11 1 13z"/>
+									</svg>
+						         </span>
+		                         <span class="nav-link-text">Users</span>
 					        </router-link><!--//nav-link-->
 					    </li><!--//nav-item-->
 					    <li class="nav-item has-submenu">

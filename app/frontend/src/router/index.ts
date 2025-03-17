@@ -102,6 +102,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/admin/Orders.vue')
   },
   {
+    path: '/admin/users_list',
+    name: 'Admin Users List',
+    component: () => import('@/admin/UsersList.vue')
+  },
+  {
     path: '/admin/charts',
     name: 'Admin Charts',
     component: () => import('@/admin/Chart.vue')

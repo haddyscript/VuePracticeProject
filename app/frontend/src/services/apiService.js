@@ -104,6 +104,12 @@ const apiServicesToReUse = {
     adminLandingPage(){
         return apiRequest.get('/admin_landing_page');
     },
+    adminGetUserList(formData){
+        return apiRequest.post('/admin/get_user_list', formData);
+    },
+    adminDeactivateUser(formData){
+        return apiRequest.post('admin/deactivate_user', formData);
+    },
     getAdminInfo(formData){
         return apiRequest.post('/admin', formData);
     },
