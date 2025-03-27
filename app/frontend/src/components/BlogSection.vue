@@ -7,7 +7,7 @@
 						<h2 class="section-title">Recent Blog</h2>
 					</div>
 					<div class="col-md-6 text-start text-md-end">
-						<a href="#" class="more">View All Posts</a>
+						<router-link to="/blog" class="more">View All Posts</router-link>
 					</div>
 				</div>
 

@@ -51,18 +51,19 @@
                                   <h2 class="h5 text-black">{{ product.product_name }}</h2>
                               </td>
                               <td>${{ product.product_price }}</td>
-                              <td>
+                              <td style="cursor: pointer;" @click="toggleModalInform()">
+                                <!-- <input type="text" class="form-control text-center quantity-amount" v-model="product.quantity" readonly> -->
+                                 {{ product.quantity }}
                                   <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
-                                      <div class="input-group-prepend">
+                                      <!-- <div class="input-group-prepend">
                                           <button class="btn btn-outline-black decrease" @click="decreaseQuantity(index)" type="button">&minus;</button>
-                                      </div>
-                                      <input type="text" class="form-control text-center quantity-amount" v-model="product.quantity" readonly>
-                                      <div class="input-group-append">
+                                      </div> -->
+                                      <!-- <div class="input-group-append">
                                           <button class="btn btn-outline-black increase" @click="increaseQuantity(index)" type="button">&plus;</button>
-                                      </div>
+                                      </div> -->
                                   </div>
                               </td>
-                              <td>${{ product.product_price * product.quantity }}</td>
+                              <td>${{ (product.product_price * product.quantity).toFixed(2) }}</td>
                               <td><a class="btn btn-black btn-sm" @click="removeFromCart(product.product_id)">X</a></td>
                           </tr>
                       </tbody>
@@ -175,6 +176,9 @@ export default{
     },
   },
   methods: {
+    toggleModalInform(){
+      showAlert("info", "Notice", "Quantity can't be changed here. Please update it on the shopping page. Thank you!");
+    },
     toggleSelection(productId) {
         const index = this.selectedProducts.indexOf(productId);
         if (index === -1) {
@@ -264,14 +268,14 @@ export default{
               console.error('Catch error ' , error);
           }
       },
-      decreaseQuantity(index) {
-          if (this.products[index].quantity > 1) {
-              this.products[index].quantity--;
-          }
-      },
-      increaseQuantity(index) {
-          this.products[index].quantity++;
-      },
+      // decreaseQuantity(index) {
+      //     if (this.products[index].quantity > 1) {
+      //         this.products[index].quantity--;
+      //     }
+      // },
+      // increaseQuantity(index) {
+      //     this.products[index].quantity++;
+      // },
       async removeFromCart(productId) {
           const userData = localStorage.getItem('user');
           const user = JSON.parse(userData);

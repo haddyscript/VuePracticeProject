@@ -8,7 +8,9 @@
 						<div class="col-lg-5">
 							<div class="intro-excerpt">
 								<h1>Blog</h1>
-								<p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique.</p>
+								<p class="mb-4">
+									Stay informed with the latest trends, shopping tips, and exclusive deals from My Hadi Store. Our blog keeps you updated on must-have products and industry insights. Explore, learn, and shop smarter with us!
+								</p>
 								<p> <router-link class="btn btn-secondary me-2" to="/shop">Shop Now</router-link> <a href="#" class="btn btn-white-outline">Explore</a></p>
 							</div>
 						</div>

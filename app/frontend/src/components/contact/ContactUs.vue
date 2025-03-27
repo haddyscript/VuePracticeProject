@@ -7,7 +7,9 @@
 						<div class="col-lg-5">
 							<div class="intro-excerpt">
 								<h1>Contact</h1>
-								<p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique.</p>
+								<p class="mb-4">
+                  Have questions or need assistance? Get in touch with us—we’re here to help! Reach out anytime, and we’ll respond as soon as possible.
+                </p>
 								<p> <router-link class="btn btn-secondary me-2" to="/shop">Shop Now</router-link> <a href="#" class="btn btn-white-outline">Explore</a></p>
 							</div>
 						</div>
@@ -47,7 +49,14 @@
                       </svg>
                     </div> <!-- /.icon -->
                     <div class="service-contents">
-                      <p v-if="business_detail"> {{ business_detail.address }}, {{ business_detail.city }}, {{ business_detail.state }}, {{ business_detail.country }} - {{ business_detail.postal_code }} </p>
+                      <a v-if="business_detail" 
+                        :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business_detail.address)}`" 
+                        target="_blank"
+                        style="text-decoration: none; color: inherit;">
+                        <p>
+                          {{ business_detail.address }}, {{ business_detail.city }}, {{ business_detail.state }}, {{ business_detail.country }} - {{ business_detail.postal_code }}
+                        </p>
+                      </a>
                     </div> <!-- /.service-contents-->
                   </div> <!-- /.service -->
                 </div>

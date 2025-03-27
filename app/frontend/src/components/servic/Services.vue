@@ -8,7 +8,9 @@
 						<div class="col-lg-5">
 							<div class="intro-excerpt">
 								<h1>Services</h1>
-								<p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique.</p>
+								<p class="mb-4">
+									Discover our range of services designed to enhance your shopping experience. From fast and secure transactions to excellent customer support, we ensure a seamless and satisfying journey for every customer.
+								</p>
 								<p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>
 							</div>
 						</div>
@@ -39,7 +41,7 @@
 								<img src="/images/truck.svg" alt="Image" class="imf-fluid">
 							</div>
 							<h3>Fast &amp; Free Shipping</h3>
-							<p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+							<p>Enjoy fast and free shipping on all eligible orders! We ensure quick delivery so you can receive your items without extra costs or long waits.</p>
 						</div>
 					</div>
 
@@ -49,7 +51,9 @@
 								<img src="/images/bag.svg" alt="Image" class="imf-fluid">
 							</div>
 							<h3>Easy to Shop</h3>
-							<p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+							<p>
+								Browse, select, and checkout with ease! Our user-friendly platform makes shopping simple and convenient for everyone.
+							</p>
 						</div>
 					</div>
 
@@ -59,7 +63,9 @@
 								<img src="/images/support.svg" alt="Image" class="imf-fluid">
 							</div>
 							<h3>24/7 Support</h3>
-							<p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+							<p>
+								Need help? Our customer support team is available 24/7 to assist you with any inquiries or concerns.
+							</p>
 						</div>
 					</div>
 
@@ -69,47 +75,9 @@
 								<img src="/images/return.svg" alt="Image" class="imf-fluid">
 							</div>
 							<h3>Hassle Free Returns</h3>
-							<p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
-						</div>
-					</div>
-
-					<div class="col-6 col-md-6 col-lg-3 mb-4">
-						<div class="feature">
-							<div class="icon">
-								<img src="/images/truck.svg" alt="Image" class="imf-fluid">
-							</div>
-							<h3>Fast &amp; Free Shipping</h3>
-							<p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
-						</div>
-					</div>
-
-					<div class="col-6 col-md-6 col-lg-3 mb-4">
-						<div class="feature">
-							<div class="icon">
-								<img src="/images/bag.svg" alt="Image" class="imf-fluid">
-							</div>
-							<h3>Easy to Shop</h3>
-							<p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
-						</div>
-					</div>
-
-					<div class="col-6 col-md-6 col-lg-3 mb-4">
-						<div class="feature">
-							<div class="icon">
-								<img src="/images/support.svg" alt="Image" class="imf-fluid">
-							</div>
-							<h3>24/7 Support</h3>
-							<p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
-						</div>
-					</div>
-
-					<div class="col-6 col-md-6 col-lg-3 mb-4">
-						<div class="feature">
-							<div class="icon">
-								<img src="/images/return.svg" alt="Image" class="imf-fluid">
-							</div>
-							<h3>Hassle Free Returns</h3>
-							<p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+							<p>
+								Shop with confidence! We offer easy and hassle-free returns to ensure your satisfaction with every purchase."
+							</p>
 						</div>
 					</div>
 
@@ -127,7 +95,9 @@
 					<!-- Start Column 1 -->
 					<div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
 						<h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-						<p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. </p>
+						<p class="mb-4">
+							Made with high-quality materials for durability and comfort. Enjoy products crafted to meet the highest standards of excellence.
+						</p>
 						<p><a href="#" class="btn">Explore</a></p>
 					</div> 
 					<!-- End Column 1 -->

@@ -12,15 +12,17 @@
 					</div>
 					<div class="col-lg-5 ps-lg-5">
 						<h2 class="section-title mb-4">We Help You Make Modern Interior Design</h2>
-						<p>Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada</p>
+						<p>
+							We bring your vision to life with stylish and functional modern interior design. Let us help you create a space that reflects elegance, comfort, and sophistication.
+						</p>
 
 						<ul class="list-unstyled custom-list my-4">
-							<li>Donec vitae odio quis nisl dapibus malesuada</li>
-							<li>Donec vitae odio quis nisl dapibus malesuada</li>
-							<li>Donec vitae odio quis nisl dapibus malesuada</li>
-							<li>Donec vitae odio quis nisl dapibus malesuada</li>
+							<li>Innovative designs that blend style and functionality</li>  
+							<li>High-quality materials for lasting durability and comfort</li>  
+							<li>Personalized solutions tailored to your space</li>  
+							<li>Seamless project execution with expert craftsmanship</li>  
 						</ul>
-						<p><a herf="#" class="btn">Explore</a></p>
+						<p><router-link to="/shop" class="btn">Explore</router-link></p>
 					</div>
 				</div>
 			</div>
