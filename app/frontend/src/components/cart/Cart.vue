@@ -144,6 +144,7 @@
 <script>
 import apiRequest from '@/services/apiService';
 import showAlert from "@/services/swalAlert";
+import { eventBus } from '@/eventBus';
 
 export default{
   data(){
@@ -287,6 +288,7 @@ export default{
             const response = await apiRequest.removeFromCart(formData);
             if(response.data.success == "true"){
                 this.fetchProducts();
+                eventBus.emit('updateCartCount'); // Emit event to update cart count
                 showAlert("success", "Success", response.data.message);
             }else{
                 console.error('Error fetching products', response.data);

@@ -109,6 +109,7 @@
 <script>
 import apiRequest from '@/services/apiService';
 import showAlert from "@/services/swalAlert";
+import { eventBus } from '@/eventBus';
 
 export default {
 	data() {
@@ -180,7 +181,8 @@ export default {
 
 				if(response.data.success == "true"){
 					showAlert("success", "Success!", response.data.message);
-					this.$router.push('/cart');
+					eventBus.emit('updateCartCount'); // Emit event to update cart count
+					this.fetchProducts(); 
 					this.quantity = 1;
 				}else{
 					showAlert("error", "Oops!", response.data.message);

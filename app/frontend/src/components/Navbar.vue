@@ -53,6 +53,15 @@
 
 <script>
 import apiRequest from '@/services/apiService';
+import { eventBus } from '@/eventBus';
+import { onMounted, onUnmounted } from 'vue';
+onMounted(() => {
+      eventBus.on('updateCartCount', getCartCountItems);
+  });
+
+onUnmounted(() => {
+    eventBus.off('updateCartCount', getCartCountItems);
+});
 
 export default {
   name: 'Navbar',
@@ -193,6 +202,13 @@ export default {
             console.error('Error fetching cart items:', error);
           }
         }
+  },
+  mounted() {
+    eventBus.on('updateCartCount', this.getCartCountItems);
+    this.getCartCountItems(); 
+  },
+  beforeUnmount() {
+    eventBus.off('updateCartCount', this.getCartCountItems);
   }
 };
 </script>
