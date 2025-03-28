@@ -22,22 +22,26 @@
 		<div v-else>
 		<div class="untree_co-section product-section before-footer-section">
 			<div class="container">
-			<div class="row">
-				<div v-for="product in products" :key="product.id" class="col-12 col-md-4 col-lg-3 mb-5">
-					<a class="product-item" href="#" @click.prevent="openModal(product)">
-						<img :src="getProductImage(product)" class="img-fluid product-thumbnail" alt="Product Image" style="max-width: 300px; height: 300px; margin: 0 auto; display: block;">
-						<h3 class="product-title">{{ product.name }}</h3>
-						<strong class="product-price">${{ formatPrice(product.price) }}</strong>
-						<p class="product-brand">Brand: {{ product.brand }}</p>
-						<p class="product-quantity">Quantity: {{ product.stock_quantity }}</p>
-						<p class="product-date">Added on: {{ formatDate(product.created_at) }}</p>
+				<div class="row">
+					<div v-for="product in products" :key="product.id" class="col-12 col-md-4 col-lg-3 mb-5">
+						<a class="product-item" href="#" @click.prevent="openModal(product)">
+							<img :src="getProductImage(product)" class="img-fluid product-thumbnail" alt="Product Image" style="max-width: 300px; height: 300px; margin: 0 auto; display: block;">
+							<!-- Yellow Badge (Only if product is in cart) -->
+							<span v-if="product.is_in_cart.length > 0" class="badge bg-warning position-absolute top-0 start-100 translate-middle">
+								{{ product.is_in_cart[0].quantity }} qty in cart
+							</span>
+							<h3 class="product-title">{{ product.name }}</h3>
+							<strong class="product-price">${{ formatPrice(product.price) }}</strong>
+							<p class="product-brand">Brand: {{ product.brand }}</p>
+							<p class="product-quantity">Quantity: {{ product.stock_quantity }}</p>
+							<p class="product-date">Added on: {{ formatDate(product.created_at) }}</p>
 
-						<span class="icon-cross">
-							<img src="/images/cross.svg" class="img-fluid">
-						</span>
-					</a>
+							<span class="icon-cross">
+								<img src="/images/cross.svg" class="img-fluid">
+							</span>
+						</a>
+					</div>
 				</div>
-			</div>
 			</div>
 
 			<nav class="app-pagination mt-5" v-if="pagination.total > 0">

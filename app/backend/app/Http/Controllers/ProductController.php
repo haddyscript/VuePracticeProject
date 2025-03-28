@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\OrderBillingDetails;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use App\Models\Checkout;
 
 class ProductController extends Controller
@@ -115,6 +116,7 @@ class ProductController extends Controller
         $products = $query->paginate($perPage, ['*'], 'page', $page);
     
         foreach ($products as $product) {
+            $product->is_in_cart = $this->checkProductInShop($product->id);
             if ($product->productImages) {
                 foreach ($product->productImages as $image) {
                     $image->image_data = base64_encode($image->image_data);
@@ -134,6 +136,21 @@ class ProductController extends Controller
                 'total' => $products->total(),
             ],
         ]);
+    }
+
+    private function checkProductInShop($request) {
+        $user_id = auth('sanctum')->user()->id;
+
+        if(!$user_id) {
+            return response()->json([
+                "products_in_cart" => NULL
+            ]);
+        }
+        $cart = Cart::where('user_id', $user_id)->where('is_checkout', 0)->where('product_id', $request)->get();
+
+        Log::info('Cart : ' . $cart);
+        return $cart;
+
     }
 
     public function getAllProducts(Request $request) {
