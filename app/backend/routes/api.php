@@ -17,6 +17,7 @@ use App\Http\Controllers\XenditPaymentController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 Route::post('/xendit/payment_invoice', [XenditPaymentController::class, 'createInvoice']);
 Route::post('/xendit/ewallet_payment', [XenditPaymentController::class, 'createEwalletPayment']);
@@ -53,6 +54,26 @@ Route::get('/drop-table/{table}', function ($table) { //FOR DEPLOYMENT
     DB::statement("DROP TABLE IF EXISTS $table");
 
     return response("Table '$table' has been dropped.", 200);
+});
+Route::get('/drop-all-tables', function () { // FOR DEPLOYMENT - DANGEROUS
+    $schema = DB::getSchemaBuilder();
+    $tables = $schema->getConnection()->getDoctrineSchemaManager()->listTableNames();
+
+    if (empty($tables)) {
+        return response("No tables found to drop.", 404);
+    }
+
+    // Disable foreign key checks before dropping
+    DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+    foreach ($tables as $table) {
+        Schema::drop($table);
+    }
+
+    // Re-enable foreign key checks
+    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+    return response("All tables have been dropped.", 200);
 });
 Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
