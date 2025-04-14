@@ -40,6 +40,9 @@ Route::get('/migrate-now', function () {
     Artisan::call('migrate', ['--force' => true]);
     return 'Migration complete!';
 });
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
 
 
 Route::middleware('auth:sanctum')->group(function () {
