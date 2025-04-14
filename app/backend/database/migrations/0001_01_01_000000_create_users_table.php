@@ -22,7 +22,8 @@ return new class extends Migration
             $table->string('state', 100)->nullable();
             $table->string('country', 100)->nullable();
             $table->string('postal_code', 20)->nullable();
-            $table->longBlob('profile_picture')->nullable();
+            // $table->longBlob('profile_picture')->nullable(); //For Local
+            $table->binary('profile_picture')->nullable(); //For Deployment
             $table->boolean('is_active')->default(true);
             $table->boolean('is_verified')->default(false);
             $table->rememberToken();

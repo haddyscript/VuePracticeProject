@@ -18,7 +18,8 @@ return new class extends Migration {
             $table->string('full_name');
             $table->string('phone_number')->nullable();
             $table->string('location')->nullable();
-            $table->longBlob('profile_picture')->nullable();
+            // $table->longBlob('profile_picture')->nullable(); For Local
+            $table->longBlob('profile_picture')->nullable(); //For Deployment
             $table->string('role')->default('admin');
             $table->boolean('status')->default(true);
             $table->timestamp('last_login')->nullable();
