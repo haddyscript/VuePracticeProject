@@ -37,14 +37,14 @@ Route::get('/admin/get_business_detail', [BusinessDetailController::class, 'getB
 Route::get('/admin/get_all_products', [ProductController::class, 'getAllProducts']);
 Route::get('/admin/get_product/{id}', [ProductController::class, 'getProductById']);
 
-Route::get('/migrate-now', function () {
+Route::get('/migrate-now', function () { //FOR DEPLOYMENT
     Artisan::call('migrate', ['--force' => true]);
     return 'Migration complete!';
 });
 Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
-Route::get('/debug-log', function () {
+Route::get('/debug-log', function () { //FOR DEPLOYMENT 
     $logFile = storage_path('logs/laravel.log');
 
     if (!File::exists($logFile)) {
@@ -53,7 +53,17 @@ Route::get('/debug-log', function () {
 
     return response()->file($logFile);
 });
-Route::get('/clear-cache', function() {
+Route::get('/clear-debug-log', function () { //FOR DEPLOYMENT
+    $logFile = storage_path('logs/laravel.log');
+
+    if (!File::exists($logFile)) {
+        return response('Log file not found.', 404);
+    }
+
+    File::put($logFile, ''); 
+    return response('Log file cleared.', 200);
+});
+Route::get('/clear-cache', function() { //FOR DEPLOYMENT
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
     Artisan::call('route:clear');
