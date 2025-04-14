@@ -16,6 +16,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\XenditPaymentController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 
 Route::post('/xendit/payment_invoice', [XenditPaymentController::class, 'createInvoice']);
 Route::post('/xendit/ewallet_payment', [XenditPaymentController::class, 'createEwalletPayment']);
@@ -40,6 +41,17 @@ Route::get('/admin/get_product/{id}', [ProductController::class, 'getProductById
 Route::get('/migrate-now', function () { //FOR DEPLOYMENT
     Artisan::call('migrate', ['--force' => true]);
     return 'Migration complete!';
+});
+Route::get('/drop-table/{table}', function ($table) { //FOR DEPLOYMENT DROP table
+    // Verify if the table exists first to avoid errors
+    if (!DB::getDoctrineSchemaManager()->tablesExist([$table])) {
+        return response("Table '$table' does not exist.", 404);
+    }
+
+    // Execute the query to drop the table
+    DB::statement("DROP TABLE IF EXISTS $table");
+
+    return response("Table '$table' has been dropped.", 200);
 });
 Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
