@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('checkout', function (Blueprint $table) {
             $table->id();
-            $table->int('user_id');
+            $table->integer('user_id');
             $table->json('cart_id'); 
             $table->string('coupon_code')->nullable(); 
             $table->integer('is_place_order')->default(0)->comment('0: no, 1: yes')->after('coupon_code');
