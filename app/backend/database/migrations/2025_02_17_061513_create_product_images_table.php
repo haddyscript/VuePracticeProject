@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade'); 
             $table->string('name');
             // $table->longBlob('image_data'); // For Local
-            $table->longBlob('image_data'); // For Deployment
+            $table->binary('image_data'); // For Deployment
             $table->timestamps(); 
         });
     }
