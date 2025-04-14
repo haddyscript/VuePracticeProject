@@ -12,7 +12,7 @@ class CreateOrderBillingDetailsTable extends Migration
             $table->string('id', 200)->primary();
             $table->string('payment_reference', 300)->nullable();
             $table->string('country', 100);
-            $table->int('user_id');
+            $table->integer('user_id');
             $table->string('first_name', 100);
             $table->string('last_name', 100);
             $table->string('landmark_company_building', 255)->nullable();
