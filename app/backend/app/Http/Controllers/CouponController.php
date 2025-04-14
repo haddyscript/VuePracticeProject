@@ -21,6 +21,7 @@ class CouponController extends Controller
                 'is_active' => (int) $coupon->is_active,
                 'start_date' => date('Y-m-d', strtotime($coupon->start_date)), 
                 'expiry_date' => date('Y-m-d', strtotime($coupon->expiry_date)),
+                'is_expired' => $coupon->expiry_date < date('Y-m-d') ? true : false,
             ];
         });
     

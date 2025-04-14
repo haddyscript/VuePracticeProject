@@ -35,7 +35,9 @@
               <td>{{ coupon.used_count == 'null' ? 0 : coupon.used_count || 0 }}</td>
               <td>{{ coupon.min_order_amount || 'N/A' }}</td>
               <td>{{ formatDate(coupon.start_date) }}</td>
-              <td>{{ formatDate(coupon.expiry_date) }}</td>
+              <td :style="{ backgroundColor: coupon.is_expired ? 'red' : 'transparent', color: coupon.is_expired ? 'white' : 'black' }">
+                {{ formatDate(coupon.expiry_date) }}
+              </td>
               <td>
                 <label class="switch">
                   <input type="checkbox" v-model="coupon.is_active" :true-value="1" :false-value="0" />
@@ -43,7 +45,7 @@
                 </label>
               </td>
               <td>
-                <button class="btn btn-sm btn-warning" @click="openModal(coupon, edit = true)">
+                <button class="btn btn-sm btn-success" @click="openModal(coupon, edit = true)">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="btn btn-sm btn-danger ml-2" @click="deleteCoupon(coupon.id)">

@@ -14,6 +14,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\OrderBillingDetailsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\XenditPaymentController;
+use Illuminate\Support\Facades\Artisan;
 
 Route::post('/xendit/payment_invoice', [XenditPaymentController::class, 'createInvoice']);
 Route::post('/xendit/ewallet_payment', [XenditPaymentController::class, 'createEwalletPayment']);
@@ -35,6 +36,10 @@ Route::get('/admin/get_business_detail', [BusinessDetailController::class, 'getB
 Route::get('/admin/get_all_products', [ProductController::class, 'getAllProducts']);
 Route::get('/admin/get_product/{id}', [ProductController::class, 'getProductById']);
 
+Route::get('/migrate-now', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return 'Migration complete!';
+});
 
 
 Route::middleware('auth:sanctum')->group(function () {

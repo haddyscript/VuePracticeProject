@@ -187,6 +187,7 @@ export default {
         async getCartCountItems(){
           try{
               const userData = localStorage.getItem('user');
+              if(!userData) return;
               const user = JSON.parse(userData);
 
               const formData = new FormData();
