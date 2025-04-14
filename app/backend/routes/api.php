@@ -42,9 +42,10 @@ Route::get('/migrate-now', function () { //FOR DEPLOYMENT
     Artisan::call('migrate', ['--force' => true]);
     return 'Migration complete!';
 });
-Route::get('/drop-table/{table}', function ($table) { //FOR DEPLOYMENT DROP table
-    // Verify if the table exists first to avoid errors
-    if (!DB::getDoctrineSchemaManager()->tablesExist([$table])) {
+Route::get('/drop-table/{table}', function ($table) { //FOR DEPLOYMENT
+    // Verify if the table exists using schema builder
+    $schema = DB::getSchemaBuilder();
+    if (!$schema->hasTable($table)) {
         return response("Table '$table' does not exist.", 404);
     }
 
