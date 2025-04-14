@@ -15,6 +15,7 @@ use App\Http\Controllers\OrderBillingDetailsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\XenditPaymentController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 
 Route::post('/xendit/payment_invoice', [XenditPaymentController::class, 'createInvoice']);
 Route::post('/xendit/ewallet_payment', [XenditPaymentController::class, 'createEwalletPayment']);
@@ -43,7 +44,15 @@ Route::get('/migrate-now', function () {
 Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
+Route::get('/debug-log', function () {
+    $logFile = storage_path('logs/laravel.log');
 
+    if (!File::exists($logFile)) {
+        return response('Log file not found.', 404);
+    }
+
+    return response()->file($logFile);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request){
