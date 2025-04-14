@@ -56,18 +56,20 @@ Route::get('/drop-table/{table}', function ($table) { //FOR DEPLOYMENT
     return response("Table '$table' has been dropped.", 200);
 });
 Route::get('/drop-all-tables', function () { // FOR DEPLOYMENT - DANGEROUS
-    $schema = DB::getSchemaBuilder();
-    $tables = $schema->getConnection()->getDoctrineSchemaManager()->listTableNames();
-
+    // Get the list of all table names
+    $tables = DB::select('SHOW TABLES');
+    
     if (empty($tables)) {
         return response("No tables found to drop.", 404);
     }
 
-    // Disable foreign key checks before dropping
+    // Disable foreign key checks temporarily
     DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
+    // Loop through the tables and drop them
     foreach ($tables as $table) {
-        Schema::drop($table);
+        $tableName = array_values((array)$table)[0]; // Get the table name from the object result
+        DB::statement("DROP TABLE IF EXISTS $tableName");
     }
 
     // Re-enable foreign key checks
