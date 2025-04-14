@@ -29,10 +29,10 @@ const loadAdminResources = () => {
   }
 
   const adminScripts = [
-    '/src/assets/plugins/popper.min.js',
-    '/src/assets/plugins/bootstrap/js/bootstrap.min.js',
-    '/src/assets/plugins/chart.js/chart.min.js',
-    '/src/assets/js/index-charts.js',
+    '/public/assets/plugins/popper.min.js',
+    '/public/assets/plugins/bootstrap/js/bootstrap.min.js',
+    '/public/assets/plugins/chart.js/chart.min.js',
+    '/public/assets/js/index-charts.js',
   ];
 
   adminScripts.forEach((src) => {
