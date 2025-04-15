@@ -18,13 +18,13 @@ const showAdminNavBar = computed(() =>
 
 // Function to dynamically load resources for admin routes
 const loadAdminResources = () => {
-  const existingCSS = document.querySelector('link[href="/src/assets/css/portal.css"]');
+  const existingCSS = document.querySelector('link[href="/assets/css/portal.css"]');
   const existingScripts = Array.from(document.scripts).map((script) => script.src);
 
   if (!existingCSS) {
     const adminCSS = document.createElement('link');
     adminCSS.rel = 'stylesheet';
-    adminCSS.href = '/src/assets/css/portal.css';
+    adminCSS.href = '/assets/css/portal.css';
     document.head.appendChild(adminCSS);
   }
 
