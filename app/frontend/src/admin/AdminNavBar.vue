@@ -356,7 +356,7 @@ export default {
         const response = await apiRequest.adminLogout();
 
         if (response.data.status === 'success') {
-          localStorage.removeItem('admin');
+          localStorage.removeItem('admin_token');
           localStorage.removeItem('token');
           
           // Update the reactive data that triggers re-render
