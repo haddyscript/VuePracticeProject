@@ -17,7 +17,7 @@ class CreateBusinessDetailsTable extends Migration
             $table->id(); 
             $table->string('name');
             $table->text('description')->nullable();
-            $table->date('founded_date')->nullable();
+            $table->date('founded_year')->nullable();
             $table->string('owner_name')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('email')->nullable();
