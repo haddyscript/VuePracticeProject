@@ -21,6 +21,10 @@ Route::get('/admin/get_product/{id}', [ProductController::class, 'getProductById
 
 Route::get('/pay', [PaymentController::class, 'createInvoice']);
 
+Route::get('/payment-success', function () {
+    return view('payment-success');
+});
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', function (Request $request){
