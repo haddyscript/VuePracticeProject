@@ -9,7 +9,7 @@
 								<p class="mb-4">
 									Transform your space with our modern interior design solutions. We blend style and functionality to create elegant, personalized environments that reflect your vision.
 								</p>
-								<p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>
+								<p><router-link to="/shop" class="btn btn-secondary me-2">Shop Now</router-link><a href="#" class="btn btn-white-outline">Explore</a></p>
 							</div>
 						</div>
 						<div class="col-lg-7">

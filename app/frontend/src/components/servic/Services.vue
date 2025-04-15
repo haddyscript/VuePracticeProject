@@ -11,7 +11,7 @@
 								<p class="mb-4">
 									Discover our range of services designed to enhance your shopping experience. From fast and secure transactions to excellent customer support, we ensure a seamless and satisfying journey for every customer.
 								</p>
-								<p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>
+								<p><router-link to="/shop" href="" class="btn btn-secondary me-2">Shop Now</router-link><a href="#" class="btn btn-white-outline">Explore</a></p>
 							</div>
 						</div>
 						<div class="col-lg-7">
