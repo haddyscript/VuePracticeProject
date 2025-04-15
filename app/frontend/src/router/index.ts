@@ -159,7 +159,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // Check if the user is logged in
   const user = localStorage.getItem('user');
-  const admin = localStorage.getItem('admin');
+  const admin = localStorage.getItem('admin_token');
   
   const adminRoutes = [
     '/admin', '/admin/', '/admin/product', '/admin/settings', '/admin/account', 
@@ -167,7 +167,7 @@ router.beforeEach((to, from, next) => {
     '/admin/404', '/admin/help', '/admin/edit_product/:id', '/admin/about_us_settings', '/admin/coupon'
   ];
   
-  if ( adminRoutes.includes(to.path) && admin) {
+  if ( adminRoutes.includes(to.path) && !admin) {
     if (to.path !== '/admin/login') {
       console.log('admin not logged in');
       console.log('redirecting to /admin/login');
