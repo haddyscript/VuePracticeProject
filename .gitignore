@@ -3,6 +3,7 @@ app/backend/public/storage
 app/backend/storage/*.key
 app/backend/infra
 app/backend/vendor
+app/backend/.env
 app/backend/.phpunit.result.cache
 app/backend/Homestead.json
 app/backend/Homestead.yaml
