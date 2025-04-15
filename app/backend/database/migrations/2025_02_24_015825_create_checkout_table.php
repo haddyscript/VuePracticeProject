@@ -16,7 +16,8 @@ return new class extends Migration
             $table->integer('user_id');
             $table->json('cart_id'); 
             $table->string('coupon_code')->nullable(); 
-            $table->integer('is_place_order')->default(0)->comment('0: no, 1: yes')->after('coupon_code');
+            // $table->integer('is_place_order')->default(0)->comment('0: no, 1: yes')->after('coupon_code'); FOR LOCAL
+            $table->integer('is_place_order')->default(0)->comment('0: no, 1: yes');
             $table->timestamp('created_at')->useCurrent(); 
             $table->timestamp('updated_at')->nullable(); 
         });
@@ -27,8 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('checkout', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('checkout');
     }
 };
