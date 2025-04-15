@@ -170,6 +170,10 @@ export default {
 			const user = localStorage.getItem('user');
 			var isLogin = user !== null ? true : false;
 			this.closeModal();
+			if(!isLogin) {
+				showAlert("error", "Oops!", "Please login to add products to cart.");
+				return;
+			}
 
 			try{
 				const formData = new FormData();
