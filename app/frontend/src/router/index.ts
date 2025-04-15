@@ -167,7 +167,7 @@ router.beforeEach((to, from, next) => {
     '/admin/404', '/admin/help', '/admin/edit_product/:id', '/admin/about_us_settings', '/admin/coupon'
   ];
   
-  if ( adminRoutes.includes(to.path) && !admin) {
+  if ( adminRoutes.includes(to.path) && admin) {
     if (to.path !== '/admin/login') {
       console.log('admin not logged in');
       console.log('redirecting to /admin/login');
