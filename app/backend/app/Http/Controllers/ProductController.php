@@ -139,18 +139,21 @@ class ProductController extends Controller
     }
 
     private function checkProductInShop($request) {
-        $user_id = auth('sanctum')->user()->id;
+        $user_id = auth('sanctum')->user()->id ?? null;
 
         if(!$user_id) {
             return response()->json([
                 "products_in_cart" => NULL
             ]);
+        }else{
+            $cart = Cart::where('user_id', $user_id)->where('is_checkout', 0)->where('product_id', $request)->get();
+
+            Log::info('Cart : ' . $cart);
+            return $cart;
         }
-        $cart = Cart::where('user_id', $user_id)->where('is_checkout', 0)->where('product_id', $request)->get();
-
-        Log::info('Cart : ' . $cart);
-        return $cart;
-
+        return response()->json([
+            "products_in_cart" => NULL
+        ]);
     }
 
     public function getAllProducts(Request $request) {
